@@ -1,0 +1,1046 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PartnerQC – HbA1c checked against glucose</title>
+<style>
+/*FONTS*/
+:root{
+  --bg:#EBF0F8;--bg-a:rgba(79,91,213,.11);--bg-b:rgba(18,150,168,.10);
+  --surface:rgba(255,255,255,.80);--g1:rgba(255,255,255,.92);--g2:rgba(255,255,255,.60);--rim:rgba(30,50,110,.08);--solid:#FFFFFF;--ink:#0F1E3A;--muted:#566681;--line:#DAE2F0;--soft:#EEF2FA;
+  --primary:#12376B;--primary-2:#1B4D91;--on-primary:#FFFFFF;
+  --spread:#4F5BD5;--spread-soft:#E8EBFB;--hba1c:#D6456B;--glucose:#1296A8;
+  --ok:#1B9467;--ok-ink:#0E7A52;--ok-soft:#E1F5EC;
+  --watch:#D98A0B;--watch-ink:#8A5600;--watch-soft:#FBEFD6;
+  --alarm:#D92D20;--alarm-ink:#B42318;--alarm-soft:#FDE8E6;
+  --focus:#4F5BD5;--glass-edge:rgba(255,255,255,.95);--navy-a:#1D55A0;--navy-b:#0E2C57;--acc:#4F5BD5;--acc2:#12A3A8;--glow:26%;
+  --sh:0 0 0 1px var(--rim),0 26px 50px -26px rgba(30,50,120,.34);--blob1:rgba(79,91,213,.26);--blob2:rgba(18,150,168,.22);--blob3:rgba(214,69,107,.10);
+  --r-lg:22px;--r-md:15px;--r-sm:12px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0A1120;--bg-a:rgba(108,134,245,.15);--bg-b:rgba(69,200,216,.08);
+  --surface:rgba(23,33,54,.74);--solid:#141D31;--ink:#E7EDF9;--muted:#9AA9C5;--line:#26334F;--soft:#1A2640;
+  --primary:#7D96FA;--primary-2:#93A8FF;--on-primary:#0A1120;
+  --spread:#9AA6FF;--spread-soft:#222B55;--hba1c:#F57C9E;--glucose:#45C8D8;
+  --ok:#4CD3A0;--ok-ink:#6FE0B8;--ok-soft:#10352B;
+  --watch:#F0B24A;--watch-ink:#F4C46E;--watch-soft:#3A2D10;
+  --alarm:#FF7A70;--alarm-ink:#FF9C94;--alarm-soft:#40191A;
+  --focus:#9AA6FF;--glass-edge:rgba(255,255,255,.08);
+  --g1:rgba(32,45,74,.84);--g2:rgba(21,31,53,.60);--rim:rgba(255,255,255,.07);--blob1:rgba(108,134,245,.30);--blob2:rgba(69,200,216,.16);--blob3:rgba(245,124,158,.10);--navy-a:#8FA6FF;--navy-b:#6B85F2;
+  --sh:0 0 0 1px var(--rim),0 30px 54px -28px rgba(0,0,0,.85);color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#0A1120;--bg-a:rgba(108,134,245,.15);--bg-b:rgba(69,200,216,.08);
+  --surface:rgba(23,33,54,.74);--solid:#141D31;--ink:#E7EDF9;--muted:#9AA9C5;--line:#26334F;--soft:#1A2640;
+  --primary:#7D96FA;--primary-2:#93A8FF;--on-primary:#0A1120;
+  --spread:#9AA6FF;--spread-soft:#222B55;--hba1c:#F57C9E;--glucose:#45C8D8;
+  --ok:#4CD3A0;--ok-ink:#6FE0B8;--ok-soft:#10352B;
+  --watch:#F0B24A;--watch-ink:#F4C46E;--watch-soft:#3A2D10;
+  --alarm:#FF7A70;--alarm-ink:#FF9C94;--alarm-soft:#40191A;
+  --focus:#9AA6FF;--glass-edge:rgba(255,255,255,.08);
+  --g1:rgba(32,45,74,.84);--g2:rgba(21,31,53,.60);--rim:rgba(255,255,255,.07);--blob1:rgba(108,134,245,.30);--blob2:rgba(69,200,216,.16);--blob3:rgba(245,124,158,.10);--navy-a:#8FA6FF;--navy-b:#6B85F2;
+  --sh:0 0 0 1px var(--rim),0 30px 54px -28px rgba(0,0,0,.85);color-scheme:dark;}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;min-height:100vh;color:var(--ink);font-family:"Plus Jakarta Sans Variable","Plus Jakarta Sans","Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:15px;line-height:1.55;font-feature-settings:"tnum" 1;font-variant-numeric:tabular-nums;
+  background:var(--bg);isolation:isolate}
+body::before{content:"";position:fixed;left:-8vw;right:-8vw;top:-10vh;height:75vh;z-index:-1;pointer-events:none;filter:blur(24px);
+  background:radial-gradient(38% 60% at 10% 18%,color-mix(in srgb,var(--acc,#4F5BD5) var(--glow,26%),transparent),transparent 72%),radial-gradient(34% 55% at 88% 8%,color-mix(in srgb,var(--acc2,#12A3A8) var(--glow,22%),transparent),transparent 72%),radial-gradient(28% 50% at 55% 40%,var(--blob3),transparent 72%);transition:background .4s}
+a{color:var(--spread)}
+.sr{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.ic{width:20px;height:20px;fill:currentColor;flex:none;display:inline-block;vertical-align:middle}
+.svg-sprite{position:absolute;width:0;height:0;overflow:hidden}
+
+/* ----- top bar ----- */
+.top{max-width:1240px;margin:0 auto;padding:22px 24px 0}
+.top-row{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.brand .mark{width:42px;height:42px;flex:none;filter:drop-shadow(0 8px 14px rgba(18,55,107,.28))}
+.brand h1{margin:0;font-size:1.28rem;line-height:1.15;font-weight:800;letter-spacing:-.025em}
+.brand small{display:block;color:var(--muted);font-size:.8rem;font-weight:500;margin-top:1px}
+.tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.nav-row{margin-top:18px}
+nav.steps{display:flex;gap:0;padding:5px;width:max-content;max-width:100%;overflow-x:auto;scrollbar-width:none;
+  background:var(--surface);backdrop-filter:blur(14px) saturate(1.2);-webkit-backdrop-filter:blur(14px) saturate(1.2);
+  border:1px solid var(--line);border-radius:999px;box-shadow:var(--sh),inset 0 1px 0 var(--glass-edge)}
+nav.steps::-webkit-scrollbar{display:none}
+nav.steps a{flex:0 0 auto;display:inline-flex;align-items:center;gap:7px;padding:9px 13px 9px 11px;border-radius:999px;color:var(--muted);font-size:.92rem;font-weight:600;text-decoration:none;white-space:nowrap;transition:background .15s,color .15s}
+nav.steps a .ic{width:19px;height:19px}
+nav.steps a .st{display:none;width:15px;height:15px;color:var(--ok)}
+nav.steps a[data-state="done"] .st{display:inline-block}
+nav.steps a[data-state="wait"]{opacity:.62}
+nav.steps a:hover{background:var(--soft);color:var(--ink);opacity:1}
+nav.steps a[aria-current="page"]{background:linear-gradient(180deg,var(--navy-a),var(--navy-b));color:var(--on-primary);opacity:1;box-shadow:0 10px 20px -8px var(--navy-b),inset 0 1px 0 rgba(255,255,255,.25)}
+nav.steps a[aria-current="page"] .st{color:#7EE6BD}
+
+/* ----- page ----- */
+main{max-width:1240px;margin:0 auto;padding:6px 24px 56px}
+section[data-view]{display:none}
+section[data-view].on{display:block}
+.pagehead{display:flex;justify-content:space-between;align-items:flex-end;gap:16px 24px;flex-wrap:wrap;margin:28px 0 20px}
+h2{font-size:clamp(1.8rem,1.2rem + 1.8vw,2.5rem);line-height:1.15;font-weight:800;letter-spacing:-.03em;margin:0 0 8px}
+h3{font-size:1.02rem;font-weight:700;letter-spacing:-.01em;margin:0 0 4px}
+.lead{color:var(--muted);margin:0;max-width:64ch}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);display:inline-flex;align-items:center;gap:8px;padding:7px 13px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font-size:.82rem;font-weight:600;color:var(--ink);box-shadow:var(--sh);white-space:nowrap}
+.chip .ic{width:16px;height:16px;color:var(--muted)}
+.chip.ok{color:var(--ok-ink);background:var(--ok-soft);border-color:transparent;box-shadow:none}.chip.ok .ic{color:var(--ok)}
+.chip.idle{color:var(--muted)}
+
+.grid{display:grid;grid-template-columns:minmax(280px,350px) minmax(0,1fr);gap:22px;align-items:start}
+@media (max-width:900px){.grid{grid-template-columns:1fr}}
+.stack{display:grid;grid-template-columns:minmax(0,1fr);gap:18px}.stack>:empty{display:none}.grid>*,.dash>*{min-width:0}.lvl>*,.row2>*{min-width:0}.stack>.facts,.stack>.verdict{margin:0}
+.panel,.card{background:linear-gradient(180deg,var(--g1),var(--g2));backdrop-filter:blur(20px) saturate(1.35);-webkit-backdrop-filter:blur(20px) saturate(1.35);border:1px solid var(--glass-edge);border-radius:var(--r-lg);box-shadow:var(--sh),inset 0 1px 0 var(--glass-edge);padding:22px}
+.panel h3.ph{display:flex;align-items:center;gap:10px;margin:0 0 6px;font-size:1.02rem}
+.panel h3.ph .chip-ic{width:30px;height:30px}
+.card-h{display:flex;justify-content:space-between;align-items:flex-start;gap:12px 20px;flex-wrap:wrap;margin-bottom:14px}
+.card-h h3{margin:0}
+.card-h .sub{margin:2px 0 0;color:var(--muted);font-size:.85rem}
+.sep{border:0;border-top:1px solid var(--line);margin:18px 0}
+
+/* ----- forms ----- */
+label{display:block;font-size:.82rem;font-weight:600;color:var(--muted);margin:14px 0 6px}
+input,select,textarea{font:inherit;width:100%;height:42px;padding:0 12px;border-radius:var(--r-sm);border:1px solid var(--line);background:var(--solid);color:var(--ink);transition:border-color .15s,box-shadow .15s}
+textarea{height:auto;padding:10px 12px;line-height:1.5;resize:vertical}
+select{appearance:none;-webkit-appearance:none;padding-right:34px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%238090AB' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;background-size:11px}
+input:hover,select:hover,textarea:hover{border-color:#B9C5DB}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--spread);box-shadow:0 0 0 4px var(--spread-soft)}
+input[type=checkbox],input[type=radio]{width:18px;height:18px;padding:0;margin:2px 0 0;flex:none;accent-color:var(--primary)}
+.check{display:flex;align-items:flex-start;gap:10px;color:var(--ink);font-size:.88rem;font-weight:500;margin:12px 0 0}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.opt{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;margin:10px 0 0;border:1px solid var(--line);border-radius:var(--r-md);background:var(--solid);color:var(--ink);cursor:pointer;font-size:.9rem;font-weight:500}
+.opt b{display:block;font-weight:700;font-size:.9rem}.opt small{display:block;color:var(--muted);font-size:.8rem;font-weight:500;line-height:1.4;margin-top:1px}
+.opt:has(input:checked){border-color:var(--spread);background:var(--spread-soft)}
+.opt:has(input:focus-visible){outline:3px solid var(--focus);outline-offset:2px}
+
+button,.btn{font:inherit;font-weight:600;font-size:.9rem;display:inline-flex;align-items:center;justify-content:center;gap:8px;height:42px;padding:0 17px;border-radius:12px;border:1px solid var(--line);background:var(--solid);color:var(--ink);cursor:pointer;text-decoration:none;white-space:nowrap;transition:background .15s,border-color .15s,box-shadow .15s}
+button:hover,.btn:hover{background:var(--soft);border-color:#B9C5DB}
+button .ic,.btn .ic{width:18px;height:18px}
+button.primary,.btn.primary{background:linear-gradient(180deg,var(--navy-a),var(--navy-b));border-color:var(--navy-b);color:var(--on-primary);box-shadow:0 12px 22px -12px var(--navy-b),inset 0 1px 0 rgba(255,255,255,.25)}
+button.primary:hover,.btn.primary:hover{filter:brightness(1.12)}
+.btn.lg{height:50px;padding:0 24px;font-size:.98rem;border-radius:14px}
+button:disabled{opacity:.55;cursor:not-allowed}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.iconbtn{width:42px;padding:0}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+
+/* ----- KPI tiles ----- */
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin:0 0 20px}
+.facts.pair{grid-template-columns:repeat(2,minmax(0,1fr))}
+.nw{white-space:nowrap}
+.kpi{display:flex;justify-content:space-between;align-items:stretch;gap:12px;padding:18px;border-radius:var(--r-lg);background:linear-gradient(180deg,var(--g1),var(--g2));backdrop-filter:blur(20px) saturate(1.35);-webkit-backdrop-filter:blur(20px) saturate(1.35);border:1px solid var(--glass-edge);box-shadow:var(--sh),inset 0 1px 0 var(--glass-edge);min-width:0}
+.kpi-b{min-width:0;flex:1;display:flex;flex-direction:column}
+.kpi .k{display:flex;align-items:flex-start;gap:9px;color:var(--muted);font-size:.8rem;font-weight:600;line-height:1.35}
+.kpi .v{font-size:1.75rem;font-weight:800;letter-spacing:-.03em;line-height:1.15;margin-top:auto;padding-top:12px;overflow-wrap:anywhere}
+.kpi .sub{color:var(--muted);font-size:.78rem;margin-top:3px;font-weight:500}
+.chip-ic{flex:none;width:30px;height:30px;border-radius:10px;display:inline-grid;place-items:center;background:var(--spread-soft);color:var(--spread);box-shadow:inset 0 0 0 1px rgba(79,91,213,.12)}
+.chip-ic .ic{width:17px;height:17px}
+.kpi.ok .chip-ic{background:var(--ok-soft);color:var(--ok)}
+.kpi.watch .chip-ic{background:var(--watch-soft);color:var(--watch)}
+.kpi.alarm .chip-ic{background:var(--alarm-soft);color:var(--alarm)}
+.kpi.glu .chip-ic{background:color-mix(in srgb,var(--glucose) 16%,var(--solid));color:var(--glucose)}
+.kpi.hb .chip-ic{background:color-mix(in srgb,var(--hba1c) 14%,var(--solid));color:var(--hba1c)}
+.ring{width:58px;height:58px;flex:none;align-self:center}
+.ring .trk{fill:none;stroke:var(--soft);stroke-width:6}
+.ring .val{fill:none;stroke-width:6;stroke-linecap:round}
+.ring text{font-size:12px;font-weight:800;fill:var(--ink);font-family:inherit}
+
+/* ----- charts ----- */
+.chartbox{position:relative;height:340px}
+.chartbox.tall{height:410px}
+.legend{display:flex;flex-wrap:wrap;gap:8px}
+.lg{display:inline-flex;align-items:center;gap:8px;padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:var(--solid);font-size:.8rem;font-weight:600;color:var(--ink)}
+.lg i{display:block;width:16px;height:3px;border-radius:2px;background:var(--c)}
+label.lg{margin:0;cursor:pointer;position:relative}
+label.lg input{position:absolute;inset:0;width:100%;height:100%;margin:0;padding:0;opacity:0;cursor:pointer}
+label.lg:not(:has(input:checked)){color:var(--muted);background:transparent;border-style:dashed}
+label.lg:not(:has(input:checked)) i{opacity:.35}
+label.lg:has(input:focus-visible){outline:3px solid var(--focus);outline-offset:2px}
+
+/* ----- tables ----- */
+.tbl{overflow:auto;max-height:420px;border:1px solid var(--line);border-radius:var(--r-md);background:var(--solid)}
+table{border-collapse:separate;border-spacing:0;width:100%;font-size:.88rem}
+th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{position:sticky;top:0;z-index:1;background:var(--soft);color:var(--muted);font-size:.78rem;font-weight:700;white-space:nowrap}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:hover td{background:color-mix(in srgb,var(--spread-soft) 55%,transparent)}
+td:first-child{font-weight:600}
+th.num,td.num{text-align:right;white-space:nowrap}
+.tbl.fit{max-height:none}
+.tbl.wrapth th{white-space:normal;vertical-align:bottom;line-height:1.35}
+.tbl.strat td:first-child{min-width:12.5em}
+tr.hl td{background:color-mix(in srgb,var(--spread-soft) 70%,transparent)}
+.cellbar{display:flex;align-items:center;gap:10px;justify-content:flex-end}
+.cellbar .bar{flex:0 1 64px;height:6px;border-radius:99px;background:var(--soft);overflow:hidden;min-width:40px}
+.cellbar .bar i{display:block;height:100%;border-radius:99px;background:var(--spread)}
+tr.hl .cellbar .bar i{background:var(--ok)}
+.tag{display:inline-block;margin-left:8px;padding:1px 8px;border-radius:99px;font-size:.7rem;font-weight:700;background:var(--ok-soft);color:var(--ok-ink);vertical-align:1px}
+
+/* ----- status ----- */
+.pill{display:inline-flex;align-items:center;gap:7px;padding:3px 11px 3px 9px;border-radius:999px;font-size:.78rem;font-weight:700;line-height:1.5;background:var(--soft);color:var(--muted)}
+.pill::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.pill.ok{color:var(--ok-ink);background:var(--ok-soft)}.pill.watch{color:var(--watch-ink);background:var(--watch-soft)}.pill.alarm{color:var(--alarm-ink);background:var(--alarm-soft)}
+.note{font-size:.82rem;color:var(--muted);margin:12px 0 0;line-height:1.5}
+.verdict{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start;padding:14px 16px;border-radius:var(--r-md);background:var(--spread-soft);margin:0 0 16px;font-size:.92rem}
+.verdict .vi{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:var(--solid);color:var(--spread)}
+.verdict .vt{margin-bottom:3px}
+.verdict.alarm{background:var(--alarm-soft)}.verdict.alarm .vi{color:var(--alarm)}
+.verdict.ok{background:var(--ok-soft)}.verdict.ok .vi{color:var(--ok)}
+.verdict.watch{background:var(--watch-soft)}.verdict.watch .vi{color:var(--watch)}
+.empty{display:grid;justify-items:center;gap:6px;padding:44px 24px;border:1.5px dashed #B9C5DB;border-radius:var(--r-lg);text-align:center;color:var(--muted);background:var(--surface)}
+.empty .chip-ic{width:46px;height:46px;border-radius:14px;margin-bottom:6px}.empty .chip-ic .ic{width:24px;height:24px}
+.empty b{color:var(--ink);font-size:1.02rem}
+.empty p{margin:0 0 8px;max-width:48ch}
+
+/* ----- running average meter ----- */
+.meter{height:14px;border-radius:999px;background:var(--soft);position:relative;overflow:hidden;margin:14px 0 6px}
+.meter i{position:absolute;top:0;bottom:0;left:50%;border-radius:999px;background:var(--spread);transition:width .25s,left .25s,background .25s}
+.meter::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.55;
+  background:linear-gradient(var(--muted),var(--muted)) 8.33% 0/2px 100% no-repeat,linear-gradient(var(--muted),var(--muted)) 50% 0/2px 100% no-repeat,linear-gradient(var(--muted),var(--muted)) 91.67% 0/2px 100% no-repeat}
+.scale{position:relative;height:18px;font-size:.72rem;font-weight:700;color:var(--muted)}
+.scale span{position:absolute;transform:translateX(-50%)}
+
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.82rem}
+pre{margin:12px 0 0;background:#0E1930;color:#D6E2FF;padding:16px 18px;border-radius:var(--r-md);overflow-x:auto;line-height:1.6}
+
+/* ----- start screen ----- */
+.hero{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:32px;align-items:center;padding:34px}
+.hero h3{font-size:1.5rem;font-weight:800;letter-spacing:-.025em;line-height:1.2;margin:0 0 10px}
+.hero p{margin:0 0 20px;color:var(--muted);max-width:54ch}
+.hero .cta{display:flex;gap:12px;flex-wrap:wrap}
+.req{display:flex;gap:8px;flex-wrap:wrap;margin:22px 0 0;padding:0;list-style:none}
+.req li{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;background:var(--solid);border:1px solid var(--line);font-size:.8rem;font-weight:600}
+.req li .ic{width:15px;height:15px;color:var(--spread)}
+.hero .note{margin-top:14px}
+.fig{background:var(--solid);border:1px solid var(--line);border-radius:var(--r-md);padding:16px 16px 12px}
+.fig svg{display:block;width:100%;height:auto}
+.fig figcaption{color:var(--muted);font-size:.8rem;margin-top:8px}
+@media (max-width:900px){.hero{grid-template-columns:1fr;padding:24px}}
+.drop{position:fixed;inset:12px;z-index:50;display:none;place-items:center;border:2px dashed var(--spread);border-radius:28px;background:rgba(79,91,213,.12);backdrop-filter:blur(4px);font-size:1.2rem;font-weight:700;color:var(--spread);pointer-events:none}
+body.dragging .drop{display:grid}
+
+footer{max-width:1240px;margin:0 auto;padding:0 24px 36px}
+footer p{margin:0;padding:16px 18px;border-radius:var(--r-md);border:1px solid var(--line);background:var(--surface);color:var(--muted);font-size:.8rem;line-height:1.55}
+@media (max-width:640px){
+  .top,main,footer{padding-left:16px;padding-right:16px}
+  .tools .btn span.t,.tools button span.t{display:none}
+  .tools .btn,.tools button{padding:0 13px}
+  .row2{grid-template-columns:1fr}
+  .kpi .v{font-size:1.5rem}
+  button,.btn{white-space:normal;height:auto;min-height:42px;padding-top:8px;padding-bottom:8px;text-align:center}
+  .actions>*{max-width:100%}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ----- dashboard ----- */
+.dash{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:18px;align-items:stretch}
+.dash .chartbox{height:330px}
+.c4{grid-column:span 4}.c5{grid-column:span 5}.c6{grid-column:span 6}.c7{grid-column:span 7}.c8{grid-column:span 8}.c12{grid-column:span 12}
+@media (max-width:1000px){.c4,.c5,.c6,.c7,.c8{grid-column:span 12}}
+.card-h .go{font-size:.82rem;font-weight:700;color:var(--spread);text-decoration:none;white-space:nowrap}
+.card-h .go:hover{text-decoration:underline}
+.big{display:flex;align-items:baseline;gap:10px;margin:2px 0 10px}
+.big b{font-size:2.6rem;font-weight:800;letter-spacing:-.04em;line-height:1}
+.big span{color:var(--muted);font-size:.85rem;font-weight:600}
+.big .up{margin-left:auto;padding:3px 10px;border-radius:99px;background:var(--spread-soft);color:var(--spread);font-size:.78rem;font-weight:800}
+.pbar{height:10px;border-radius:99px;background:var(--soft);overflow:hidden}
+.pbar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--spread),var(--glucose))}
+.pbar-l{display:flex;justify-content:space-between;color:var(--muted);font-size:.74rem;font-weight:700;margin-top:6px}
+.minis{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.mini{display:flex;align-items:center;gap:10px;padding:12px;border-radius:var(--r-md);background:var(--g1);border:1px solid var(--line);min-width:0}
+.mini .ring{width:46px;height:46px}
+.mini b{display:block;font-size:1.05rem;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.mini small{display:block;color:var(--muted);font-size:.72rem;font-weight:600;line-height:1.3}
+.att{display:flex;gap:12px;align-items:flex-start;padding:12px;border-radius:var(--r-md);background:var(--g1);border:1px solid var(--line)}
+.att+.att{margin-top:10px}
+.att .tx{min-width:0;flex:1}
+.att .tt{display:flex;gap:8px;align-items:center;justify-content:space-between}
+.att b{font-size:.9rem}
+.att .tm{color:var(--muted);font-size:.75rem;font-weight:600}
+.att p{margin:3px 0 0;color:var(--muted);font-size:.8rem;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.insight{position:relative;overflow:hidden}
+.insight::before{content:"";position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,var(--blob1),transparent 70%);pointer-events:none}
+.insight .rec{font-size:1.15rem;font-weight:700;letter-spacing:-.015em;line-height:1.4;margin:4px 0 16px;max-width:60ch;position:relative}
+.insight .minis{grid-template-columns:repeat(3,minmax(0,1fr));margin-top:0;position:relative}
+.insight .minis .mini{flex-direction:column;align-items:flex-start;gap:2px}
+@media (max-width:640px){.insight .minis{grid-template-columns:1fr}}
+.stp{display:grid;gap:10px}
+.stp a{display:flex;gap:14px;align-items:center;padding:12px 14px;border-radius:var(--r-md);background:var(--g1);border:1px solid var(--line);text-decoration:none;color:var(--ink);transition:border-color .15s,transform .15s}
+.stp a:hover{border-color:var(--spread)}
+.stp a .tx{flex:1;min-width:0}.stp a b{display:block;font-size:.92rem}.stp a small{display:block;color:var(--muted);font-size:.8rem}
+.stp a .ic.st{width:20px;height:20px;color:var(--ok)}
+.stp a.next{border-color:var(--spread);background:var(--spread-soft)}
+.errbar{position:sticky;top:0;z-index:60;display:flex;gap:12px;align-items:flex-start;padding:14px 20px;background:var(--alarm-soft);color:var(--alarm-ink);border-bottom:1px solid var(--alarm);font-size:.9rem}
+.errbar .ic{margin-top:2px}.errbar div{flex:1}.errbar code{word-break:break-word}
+
+/* ----- accent colour per tab ----- */
+.acc-overview{--acc:#4F5BD5;--acc2:#12A3A8}
+.acc-data{--acc:#2B8CE6;--acc2:#7C5CE6}
+.acc-law{--acc:#8B5CF6;--acc2:#E0457B}
+.acc-calibrate{--acc:#10A3A8;--acc2:#2B8CE6}
+.acc-monitor{--acc:#3B6FE0;--acc2:#1FA971}
+.acc-iqc{--acc:#F08A24;--acc2:#E0457B}
+.acc-simulate{--acc:#E0457B;--acc2:#F08A24}
+.acc-check{--acc:#1FA971;--acc2:#2B8CE6}
+.acc-plan{--acc:#D99A0B;--acc2:#4F5BD5}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--glow:30%}}
+:root[data-theme="dark"]{--glow:30%}
+nav.steps a .ic:first-child{color:var(--acc)}
+nav.steps a[aria-current="page"] .ic:first-child{color:#fff}
+.chip-ic{background:color-mix(in srgb,var(--acc) 15%,var(--solid));color:var(--acc);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--acc) 22%,transparent)}
+.kpi.ok .chip-ic{background:var(--ok-soft);color:var(--ok)}.kpi.watch .chip-ic{background:var(--watch-soft);color:var(--watch)}.kpi.alarm .chip-ic{background:var(--alarm-soft);color:var(--alarm)}
+section .btn.primary,section button.primary{background:linear-gradient(135deg,var(--acc),color-mix(in srgb,var(--acc) 55%,#0E2C57));border-color:color-mix(in srgb,var(--acc) 60%,#0E2C57)}
+section .card-h .go,section a:not(.btn){color:var(--acc)}
+.opt:has(input:checked){border-color:var(--acc);background:color-mix(in srgb,var(--acc) 12%,var(--solid))}
+
+/* ----- banner with illustration ----- */
+.banner{position:relative;overflow:hidden;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;align-items:center;margin:26px 0 22px;padding:30px 34px;border-radius:28px;border:1px solid var(--glass-edge);box-shadow:var(--sh),inset 0 1px 0 var(--glass-edge);
+  background:radial-gradient(420px 240px at 88% 45%,color-mix(in srgb,var(--acc2) 20%,transparent),transparent 70%),radial-gradient(480px 260px at 6% 110%,color-mix(in srgb,var(--acc) 20%,transparent),transparent 70%),linear-gradient(110deg,color-mix(in srgb,var(--acc) 16%,var(--solid)),var(--g1) 70%)}
+.banner::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:linear-gradient(180deg,var(--acc),var(--acc2))}
+.banner .bt{position:relative;min-width:0}
+.banner h2{margin:0 0 8px}
+.banner .chips{margin-top:18px}
+.banner .art{position:relative;width:min(290px,26vw);height:190px;background-position:center;background-repeat:no-repeat;background-size:contain;filter:drop-shadow(0 18px 22px rgba(20,40,90,.22))}
+.banner .art-analyzer,.banner .art-rack{width:min(330px,30vw)}
+@media (max-width:820px){.banner{grid-template-columns:1fr;padding:22px 22px 22px 26px}.banner .art{display:none}}
+
+/* ----- IQC methods ----- */
+.hm{width:100%}
+.hm td.c{text-align:center;font-weight:800;font-variant-numeric:tabular-nums}
+.hm td.g{background:var(--ok-soft);color:var(--ok-ink)}.hm td.y{background:var(--watch-soft);color:var(--watch-ink)}.hm td.r{background:var(--alarm-soft);color:var(--alarm-ink)}
+.hm td.fa{text-align:center;font-weight:700}
+.hm td small{display:block;color:var(--muted);font-weight:500;font-size:.74rem;line-height:1.3;max-width:34ch}
+.key{display:flex;gap:16px;flex-wrap:wrap;color:var(--muted);font-size:.78rem;font-weight:600;margin:12px 0 0}
+.key i{display:inline-block;width:12px;height:12px;border-radius:4px;margin-right:6px;vertical-align:-1px}
+.lvl{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.sw{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:0}
+.compare-callout{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.compare-callout p{margin:0;max-width:70ch;color:var(--muted)}
+footer .credit{margin-top:10px;font-size:.76rem}
+
+/*ART*/
+</style>
+<!--VENDOR-->
+</head>
+<body>
+<svg class="svg-sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+  <defs><linearGradient id="gmark" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2A62B3"/><stop offset="1" stop-color="#0F2F5E"/></linearGradient></defs>
+  <symbol id="i-data" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M8.5 3.5A1.5 1.5 0 0 1 10 2h4a1.5 1.5 0 0 1 1.5 1.5V4H18a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2.5zM7 9.5h3v3H7zM12 10.3h5v1.4h-5zM7 14.5h3v3H7zM12 15.3h5v1.4h-5z"/></symbol>
+  <symbol id="i-law" viewBox="0 0 24 24"><path d="M2.5 15h3.2v6H2.5zM6.7 9.5h3.2V21H6.7zM10.4 4h3.2v17h-3.2zM14.1 9.5h3.2V21h-3.2zM18.3 15h3.2v6h-3.2z"/></symbol>
+  <symbol id="i-gauge" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 3.5c-5.5 0-10 4.4-10 9.9 0 1.7.4 3.3 1.2 4.7.3.5.9.8 1.5.8h14.6c.6 0 1.2-.3 1.5-.8.8-1.4 1.2-3 1.2-4.7 0-5.5-4.5-9.9-10-9.9zM11.3 6h1.4v2.2h-1.4zM4.4 12.7h2.2v1.4H4.4zM17.4 12.7h2.2v1.4h-2.2zM11 15.9l3.9-6.7 1.3.8-3.8 6.9a1.6 1.6 0 1 1-1.4-1z"/></symbol>
+  <symbol id="i-monitor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M4 3.5h16A2.5 2.5 0 0 1 22.5 6v9a2.5 2.5 0 0 1-2.5 2.5h-5.3v2H17V22H7v-2.5h2.3v-2H4A2.5 2.5 0 0 1 1.5 15V6A2.5 2.5 0 0 1 4 3.5zM4.3 6.3v8.4h15.4V6.3z"/><path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" d="M6.6 12.6l3.1-3.4 2.5 2.4 4.6-4.5"/></symbol>
+  <symbol id="i-flask" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M8.6 2h6.8v2h-1v4.2l5.5 9.1a2.7 2.7 0 0 1-2.3 4.1H6.4a2.7 2.7 0 0 1-2.3-4.1l5.5-9.1V4h-1zM8 14.6l-1.6 2.7a.8.8 0 0 0 .7 1.2h9.8a.8.8 0 0 0 .7-1.2L16 14.6z"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2.1l8.2 3v6.1c0 4.8-3.3 8.9-8.2 10.7-4.9-1.8-8.2-5.9-8.2-10.7V5.1zM7.8 12.3l1.4-1.4 2 2 4.2-4.2 1.4 1.4-5.6 5.6z"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M7 2h2v2h6V2h2v2h1.5A2.5 2.5 0 0 1 21 6.5v12a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 18.5v-12A2.5 2.5 0 0 1 5.5 4H7zM4.9 9v9.5a.6.6 0 0 0 .6.6h13a.6.6 0 0 0 .6-.6V9zM7 11.4h3v2.6H7zM11 11.4h3v2.6h-3zM15 11.4h2.4v2.6H15zM7 15.4h3v2H7zM11 15.4h3v2h-3z"/></symbol>
+  <symbol id="i-drop" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2.4c3.5 4.2 6.3 7.4 6.3 11a6.3 6.3 0 0 1-12.6 0c0-3.6 2.8-6.8 6.3-11zM8.2 14a3.9 3.9 0 0 0 2.6 3.6l.5-1.4A2.5 2.5 0 0 1 9.6 14z"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm-1 4.4h2v5.2l3.3 2-1 1.7L11 12.7z"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2.6a1.5 1.5 0 0 1 1.3.75l9 15.6a1.5 1.5 0 0 1-1.3 2.25H3a1.5 1.5 0 0 1-1.3-2.25l9-15.6A1.5 1.5 0 0 1 12 2.6zM11 9h2v5.6h-2zM11 16.2h2v2.1h-2z"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm-.9 8.2h1.8v7h-1.8zM11.1 6.8h1.8v1.8h-1.8z"/></symbol>
+  <symbol id="i-ok" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM7.6 12.4L9 11l2 2 4-4 1.4 1.4-5.4 5.4z"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 2.8l5.2 5.4h-3.7v6.2h-3.2V8.2H6.8zM3.5 15h3v3.4h11V15h3v6.4h-17z"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M10.3 2.8h3.2V9h3.7L12 14.4 6.8 9h3.5zM3.5 15h3v3.4h11V15h3v6.4h-17z"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.2v15.6a.9.9 0 0 0 1.4.8l12-7.8a.9.9 0 0 0 0-1.5L8.4 3.4A.9.9 0 0 0 7 4.2z"/></symbol>
+  <symbol id="i-next" viewBox="0 0 24 24"><path d="M4 10.9h11.2l-4.6-4.6L12 4.9l7.1 7.1-7.1 7.1-1.4-1.4 4.6-4.6H4z"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20.6 14.6A8.7 8.7 0 0 1 9.4 3.4a9 9 0 1 0 11.2 11.2z"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.3"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M12 2.6v2M12 19.4v2M2.6 12h2M19.4 12h2M5.4 5.4l1.4 1.4M17.2 17.2l1.4 1.4M18.6 5.4l-1.4 1.4M6.8 17.2l-1.4 1.4"/></symbol>
+  <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13.5 2L4.5 13.4h6L9.6 22l9-11.6h-6z"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><path d="M3 4.5A1.5 1.5 0 0 1 4.5 3h5A1.5 1.5 0 0 1 11 4.5v5A1.5 1.5 0 0 1 9.5 11h-5A1.5 1.5 0 0 1 3 9.5zM13 4.5A1.5 1.5 0 0 1 14.5 3h5A1.5 1.5 0 0 1 21 4.5v5a1.5 1.5 0 0 1-1.5 1.5h-5A1.5 1.5 0 0 1 13 9.5zM3 14.5A1.5 1.5 0 0 1 4.5 13h5a1.5 1.5 0 0 1 1.5 1.5v5A1.5 1.5 0 0 1 9.5 21h-5A1.5 1.5 0 0 1 3 19.5zM13 14.5a1.5 1.5 0 0 1 1.5-1.5h5a1.5 1.5 0 0 1 1.5 1.5v5a1.5 1.5 0 0 1-1.5 1.5h-5a1.5 1.5 0 0 1-1.5-1.5z"/></symbol>
+  <symbol id="i-chartline" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M4 3.5A1.5 1.5 0 0 1 5.5 2h13A1.5 1.5 0 0 1 20 3.5v17a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 20.5zM6.2 4.4v8.1h11.6V4.4zM6.2 14.6v4.9h11.6v-4.9z"/><path d="M6.6 12.4l3-3.3 2.4 2.1 3.2-4.3 2.2 1.9v-1.4h1.4v5H6.6z" opacity="0"/><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" d="M7.6 10.6l2.6-2.8 2.2 1.8 3.6-3.4"/><circle cx="8.6" cy="17" r="1"/><circle cx="12" cy="17" r="1"/><circle cx="15.4" cy="17" r="1"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><path d="M12 12.2a4.6 4.6 0 1 0 0-9.2 4.6 4.6 0 0 0 0 9.2zM3.6 21a8.4 8.4 0 0 1 16.8 0z"/></symbol>
+</svg>
+
+<div class="drop" aria-hidden="true">Drop the LIS export to open it</div>
+<header class="top">
+  <div class="top-row">
+    <div class="brand">
+      <svg class="mark" viewBox="0 0 42 42" aria-hidden="true"><rect width="42" height="42" rx="13" fill="url(#gmark)"/><rect x="11" y="9" width="8" height="24" rx="4" fill="#F88AA8"/><rect x="23" y="16" width="8" height="17" rx="4" fill="#5ED4E3"/><circle cx="27" cy="10.5" r="3" fill="#fff"/></svg>
+      <div><h1>PartnerQC</h1><small>HbA1c checked against glucose</small></div>
+    </div>
+    <div class="tools">
+      <button class="iconbtn" id="btnTheme" type="button" aria-label="Switch between light and dark theme" title="Light / dark"><svg class="ic"><use href="#i-moon"/></svg></button>
+      <button id="btnOpen" type="button"><svg class="ic"><use href="#i-upload"/></svg><span class="t">Open LIS export</span></button>
+      <button class="primary" id="btnDemo" type="button"><svg class="ic"><use href="#i-play"/></svg><span class="t">Load demo data</span></button>
+      <input id="file" type="file" accept=".csv,.xlsx,.xls" class="sr" tabindex="-1" aria-label="Open LIS export">
+    </div>
+  </div>
+  <div class="nav-row">
+    <nav class="steps" aria-label="Workflow">
+      <a href="#overview" class="acc-overview"><svg class="ic"><use href="#i-grid"/></svg>Overview</a>
+      <a href="#data" class="acc-data"><svg class="ic"><use href="#i-data"/></svg>Data<svg class="ic st"><use href="#i-ok"/></svg></a>
+      <a href="#law" class="acc-law"><svg class="ic"><use href="#i-law"/></svg>Distribution law</a>
+      <a href="#calibrate" class="acc-calibrate"><svg class="ic"><use href="#i-gauge"/></svg>Calibrate<svg class="ic st"><use href="#i-ok"/></svg></a>
+      <a href="#monitor" class="acc-monitor"><svg class="ic"><use href="#i-monitor"/></svg>Monitor</a>
+      <a href="#iqc" class="acc-iqc"><svg class="ic"><use href="#i-chartline"/></svg>IQC methods</a>
+      <a href="#simulate" class="acc-simulate"><svg class="ic"><use href="#i-flask"/></svg>Simulate</a>
+      <a href="#check" class="acc-check"><svg class="ic"><use href="#i-shield"/></svg>Check result</a>
+      <a href="#plan" class="acc-plan"><svg class="ic"><use href="#i-calendar"/></svg>QC plan</a>
+    </nav>
+  </div>
+</header>
+<main>
+<section data-view="overview" class="acc-overview">
+  <div class="banner"><div class="bt"><h2>Overview</h2><p class="lead">Your HbA1c monitoring at a glance: how well results agree with glucose, what needs attention, and how often IQC needs to run.</p><div class="chips" data-chips></div></div><div class="art art-analyzer" aria-hidden="true"></div></div>
+  <div id="ovBody"></div>
+</section>
+<section data-view="data" class="acc-data">
+  <div class="banner"><div class="bt"><h2>Data</h2><p class="lead">Open an export with HbA1c and glucose results from the same samples. Files are read in your browser; nothing is uploaded.</p><div class="chips" data-chips></div></div><div class="art art-blood" aria-hidden="true"></div></div>
+  <div id="dataBody"></div>
+</section>
+<section data-view="law" class="acc-law">
+  <div class="banner"><div class="bt"><h2>Distribution law</h2><p class="lead">HbA1c quantiles follow a power law of glucose quantiles: ln Q(HbA1c) = α + β ln Q(glucose). The exponent β is close to 0.65 in every population studied, so only α needs local calibration.</p><div class="chips" data-chips></div></div><div class="art art-scope" aria-hidden="true"></div></div>
+  <div id="lawBody"></div>
+</section>
+<section data-view="calibrate" class="acc-calibrate">
+  <div class="banner"><div class="bt"><h2>Calibrate</h2><p class="lead">Use 2–4 weeks of results from a period when IQC was in control. PartnerQC sets the centre and width of the HbA1c–glucose spread and an alarm limit for your daily volume.</p><div class="chips" data-chips></div></div><div class="art art-pipette" aria-hidden="true"></div></div>
+  <div id="calBody"></div>
+</section>
+<section data-view="monitor" class="acc-monitor">
+  <div class="banner"><div class="bt"><h2>Monitor</h2><p class="lead">Every HbA1c result with glucose updates a moving average of the spread. The line crosses ±1 when HbA1c drifts away from what glucose predicts.</p><div class="chips" data-chips></div></div><div class="art art-analyzer" aria-hidden="true"></div></div>
+  <div id="monBody"></div>
+</section>
+<section data-view="iqc" class="acc-iqc">
+  <div class="banner"><div class="bt"><h2>IQC methods</h2><p class="lead">Compare the classic control-material techniques on the same results: Levey-Jennings with Westgard rules, EWMA and CUSUM. See which one reacts first to a shift, a drift or a loss of precision.</p><div class="chips" data-chips></div></div><div class="art art-rack" aria-hidden="true"></div></div>
+  <div id="iqcBody"></div>
+</section>
+<section data-view="simulate" class="acc-simulate">
+  <div class="banner"><div class="bt"><h2>Simulate an error</h2><p class="lead">Add an analyser error to the stream and compare how many unacceptable HbA1c results each QC strategy lets through before it detects the error.</p><div class="chips" data-chips></div></div><div class="art art-cabinet" aria-hidden="true"></div></div>
+  <div id="simBody"></div>
+</section>
+<section data-view="check" class="acc-check">
+  <div class="banner"><div class="bt"><h2>Check a result</h2><p class="lead">This is what the LIS or middleware does before releasing an HbA1c result: send the HbA1c and the glucose from the same sample, and act on the status.</p><div class="chips" data-chips></div></div><div class="art art-blood" aria-hidden="true"></div></div>
+  <div id="chkBody"></div>
+</section>
+<section data-view="plan" class="acc-plan">
+  <div class="banner"><div class="bt"><h2>QC plan</h2><p class="lead">Estimate how often your laboratory needs to run HbA1c IQC when PartnerQC watches the results in between.</p><div class="chips" data-chips></div></div><div class="art art-pipette" aria-hidden="true"></div></div>
+  <div id="planBody"></div>
+</section>
+</main>
+<footer>
+  <p>PartnerQC 0.1 is open-source software (MIT licence). It supports, and does not replace, the laboratory’s quality control procedures and professional judgement. Volumes in the QC plan are approximate and come from simulations in three Vietnamese hospitals and NHANES; validate them locally.</p>
+  <p class="credit">Nguyễn Thị Ngọc Mỹ (University of Medicine and Pharmacy at Ho Chi Minh City), Nguyễn Minh Sơn (Van Lang University), Phùng Hạnh Thảo (Pham Ngoc Thach University), Lâm Kiến Thành (Van Lang University) · Ho Chi Minh City, Viet Nam. Contact: thanh.lk@vlu.edu.vn</p>
+  <p class="credit">Illustrations: Servier Medical Art (CC BY 3.0) and DBCLS / Togo Picture Gallery (CC BY 4.0), via Bioicons. Typeface: Plus Jakarta Sans (SIL OFL 1.1).</p>
+</footer>
+<script>
+/*CORE*/
+</script>
+<script>
+"use strict";
+const S = { rows: null, meta: null, cal: null, mon: null, base: null, test: null, assay: { cva: 2.0, tea: 8.0 }, live: 0, charts: {} };
+const $ = id => document.getElementById(id);
+const fmt = (v, d = 2) => (v == null || !isFinite(v)) ? '–' : (+v).toFixed(d);
+const fmtDate = t => { const d = new Date(t); return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; };
+const fmtDay = t => { const d = new Date(t); return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`; };
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+function store(){ try { localStorage.setItem('partnerqc:v1', JSON.stringify({ cal: S.cal, live: S.live, assay: S.assay })); } catch (e) {} }
+function restore(){ try { const v = JSON.parse(localStorage.getItem('partnerqc:v1') || 'null'); if (v) { if (v.assay) S.assay = v.assay; if (v.cal) { S.cal = v.cal; S.live = v.live || 0; } } } catch (e) {} }
+
+/* ---------- routing ---------- */
+const VIEWS = ['overview', 'data', 'law', 'calibrate', 'monitor', 'iqc', 'simulate', 'check', 'plan'];
+function viewFromHash(){ const h = location.hash.slice(1); return VIEWS.includes(h) ? h : null; }
+function go(v){ S.view = v; try { history.replaceState(null, '', '#' + v); } catch (e) {} route(); window.scrollTo(0, 0); }
+function route(){ const v = VIEWS.includes(S.view) ? S.view : (viewFromHash() || 'overview');
+  document.querySelectorAll('section[data-view]').forEach(s => s.classList.toggle('on', s.dataset.view === v));
+  Array.from(document.body.classList).filter(c => c.indexOf('acc-') === 0).forEach(c => document.body.classList.remove(c)); document.body.classList.add('acc-' + v);
+  document.querySelectorAll('nav.steps a').forEach(a => { if (a.getAttribute('href') === '#' + v) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+  try { render(v); } catch (err) { console.error(err); showErr(err && err.message || String(err)); } chrome(); }
+window.addEventListener('hashchange', () => { const h = viewFromHash(); if (h) go(h); });
+/* Links and buttons are handled here, not by the browser: in sandboxed previews a #link would navigate the whole frame away. */
+document.addEventListener('click', e => {
+  const a = e.target.closest('a[href^="#"]');
+  if (a && !(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey)) { const v = a.getAttribute('href').slice(1); if (VIEWS.includes(v)) { e.preventDefault(); go(v); return; } }
+  const b = e.target.closest('[data-act]');
+  if (b) { const k = b.dataset.act; if (k === 'demo') loadDemo(); else if (k === 'open') document.getElementById('file').click(); else if (k === 'close') b.parentNode.remove(); }
+});
+
+/* ---------- reading files ---------- */
+const RX = { A: /hba1c|a1c|hb\s*a1c/i, G: /glucose|glucoza|đường huyết|\bglu\b/i, T: /lấy mẫu|thời gian|collect|sample time|datetime|date|time|ngày|giờ/i, I: /mã|sample|barcode|\bsid\b|\bid\b|code|pid/i };
+const isNum = v => v !== null && v !== '' && !isNaN(+v);
+function detectHeader(aoa){
+  const score = r => (r || []).filter(c => typeof c === 'string' && (RX.A.test(c) || RX.G.test(c) || RX.T.test(c) || RX.I.test(c))).length;
+  let best = 0, bi = 0;
+  for (let i = 0; i < Math.min(15, aoa.length); i++) { const sc = score(aoa[i]); if (sc > best) { best = sc; bi = i; } }
+  if (score(aoa[bi + 1]) >= 2) return { h: bi, two: true };
+  if (bi > 0 && score(aoa[bi - 1]) >= 2) return { h: bi - 1, two: true };
+  return { h: bi, two: false };
+}
+function headerNames(aoa, h, two){
+  const r1 = aoa[h] || [], r2 = two ? (aoa[h + 1] || []) : [], n = Math.max(r1.length, r2.length), names = [];
+  for (let c = 0; c < n; c++) { const b = r2[c], a = r1[c]; names.push(String((typeof b === 'string' && b.trim()) ? b : (a ?? `Column ${c + 1}`)).trim()); }
+  return names;
+}
+function excelSerialToLocal(v){ const ms = Math.round((v - 25569) * 86400000); const d = new Date(ms); return { y: d.getUTCFullYear(), m: d.getUTCMonth(), d: d.getUTCDate(), h: d.getUTCHours(), mi: d.getUTCMinutes() }; }
+function parseTimeCell(v, dayFirst, swap){
+  if (v == null || v === '') return null;
+  if (typeof v === 'number' && v > 20000) { const p = excelSerialToLocal(v); let dd = p.d, mm = p.m; if (swap && dd <= 12) { const t = dd; dd = mm + 1; mm = t - 1; } return new Date(p.y, mm, dd, p.h, p.mi).getTime(); }
+  const s = String(v).trim(); let m;
+  if ((m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})(?:[ T](\d{1,2}):(\d{2}))?/))) return new Date(+m[1], +m[2] - 1, +m[3], +(m[4] || 0), +(m[5] || 0)).getTime();
+  if ((m = s.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})(?:\s+(\d{1,2}):(\d{2}))?/))) { let a = +m[1], b = +m[2], y = +m[3]; if (y < 100) y += 2000; const [dd, mm] = dayFirst ? [a, b] : [b, a]; return new Date(y, mm - 1, dd, +(m[4] || 0), +(m[5] || 0)).getTime(); }
+  const t = Date.parse(s); return isNaN(t) ? null : t;
+}
+function readFile(file){
+  const isCsv = /\.csv$/i.test(file.name), fr = new FileReader();
+  fr.onload = () => {
+    try {
+      const wb = isCsv ? XLSX.read(fr.result, { type: 'string', raw: true }) : XLSX.read(new Uint8Array(fr.result), { type: 'array', cellDates: false, raw: true });
+      const ws = wb.Sheets[wb.SheetNames[0]]; const aoa = XLSX.utils.sheet_to_json(ws, { header: 1, raw: true, defval: null });
+      const { h, two } = detectHeader(aoa); const names = headerNames(aoa, h, two);
+      S.raw = { aoa, h, two, names, file: file.name }; S.map = guessMap(names); S.map.swap = guessSwap(aoa, h + (two ? 2 : 1), S.map.T);
+      buildRows(); go('data');
+    } catch (e) { $('dataBody').innerHTML = `<div class="empty">This file could not be read: ${esc(e.message)}. Save it as .xlsx or .csv and try again.</div>`; }
+  };
+  isCsv ? fr.readAsText(file) : fr.readAsArrayBuffer(file);
+}
+function guessMap(names){
+  const find = (rx, not) => names.findIndex(n => rx.test(n) && !(not && not.test(n)));
+  let T = names.findIndex(n => /lấy mẫu|collect/i.test(n)); if (T < 0) T = find(RX.T);
+  return { A: find(RX.A), G: find(RX.G, /niệu|urine|nước tiểu/i), T, I: find(RX.I), dayFirst: true, gUnit: 'auto', aUnit: 'auto' };
+}
+function guessSwap(aoa, start, T){
+  if (T < 0) return false; let ser = 0, serLow = 0, strHigh = 0;
+  for (let i = start; i < aoa.length; i++) { const v = (aoa[i] || [])[T]; if (typeof v === 'number' && v > 20000) { ser++; if (excelSerialToLocal(v).d <= 12) serLow++; } else if (typeof v === 'string') { const m = v.match(/^(\d{1,2})[\/\-.]/); if (m && +m[1] > 12) strHigh++; } }
+  return ser > 20 && serLow === ser && strHigh > 20;
+}
+function buildRows(){
+  const { aoa, h, two, names } = S.raw, mp = S.map, start = h + (two ? 2 : 1), rows = [];
+  if (mp.A < 0) { S.rows = null; return; }
+  const colA = [], colG = [];
+  for (let i = start; i < aoa.length; i++) { const r = aoa[i] || []; const a = parseFloat(r[mp.A]), g = mp.G >= 0 ? parseFloat(r[mp.G]) : NaN; if (a > 0) { colA.push(a); if (g > 0) colG.push(g); } }
+  const med = arr => { const s = [...arr].sort((x, y) => x - y); return s.length ? s[Math.floor(s.length / 2)] : NaN; };
+  const aIFCC = mp.aUnit === 'mmol/mol' || (mp.aUnit === 'auto' && med(colA) > 20), gMg = mp.gUnit === 'mg/dL' || (mp.gUnit === 'auto' && med(colG) >= 30);
+  let k = 0;
+  for (let i = start; i < aoa.length; i++) {
+    const r = aoa[i] || []; let A = parseFloat(r[mp.A]); if (!(A > 0)) continue; if (aIFCC) A = 0.09148 * A + 2.152;
+    let G = mp.G >= 0 ? parseFloat(r[mp.G]) : NaN; G = G > 0 ? (gMg ? G / PQ.MGDL : G) : null;
+    let t = mp.T >= 0 ? parseTimeCell(r[mp.T], mp.dayFirst, mp.swap) : null;
+    if (mp.T < 0) { const day = Math.floor(k / 150); t = new Date(2026, 0, 1 + day, 6).getTime() + (k % 150) * 12 * 3600000 / 150; }
+    if (t == null) continue;
+    rows.push({ id: mp.I >= 0 ? String(r[mp.I] ?? '') : 'R' + (k + 1), t, A, G }); k++;
+  }
+  rows.sort((x, y) => x.t - y.t);
+  S.units = { aIFCC, gMg }; setRows(rows);
+}
+function setRows(rows){
+  S.rows = rows; S.cal = null; S.mon = null; S.live = 0;
+  if (!rows.length) return;
+  const span = (rows[rows.length - 1].t - rows[0].t) / 86400000;
+  S.baseDays = span >= 42 ? 14 : Math.max(2, Math.round(span / 3));
+  const perDay = new Map(); for (const r of rows) { const d = new Date(r.t); d.setHours(0, 0, 0, 0); perDay.set(d.getTime(), (perDay.get(d.getTime()) || 0) + 1); }
+  const wd = [...perDay].filter(([d]) => { const w = new Date(d).getDay(); return w > 0 && w < 6; }).map(x => x[1]);
+  const all = [...perDay.values()]; S.perWeekday = PQ.mean(wd.length ? wd : all); S.coverage = rows.filter(r => r.G).length / rows.length;
+  S.span = span; S.resultsPerDay = Math.round(S.perWeekday * S.coverage);
+}
+
+/* ---------- interface helpers ---------- */
+const ic = (n, c = '') => `<svg class="ic ${c}" aria-hidden="true"><use href="#i-${n}"/></svg>`;
+const chipIc = n => `<span class="chip-ic">${ic(n)}</span>`;
+function ring(p, color = 'var(--spread)', txt){
+  const r = 23, C = 2 * Math.PI * r, f = Math.max(0, Math.min(1, p || 0)), d = f * C;
+  return `<svg class="ring" viewBox="0 0 58 58" role="img" aria-label="${Math.round(100 * f)}%"><circle class="trk" cx="29" cy="29" r="${r}"/><circle class="val" cx="29" cy="29" r="${r}" stroke="${color}" stroke-dasharray="${d.toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 29 29)"/><text x="29" y="33" text-anchor="middle">${txt ?? Math.round(100 * f) + '%'}</text></svg>`;
+}
+const kpi = (v, k, o = {}) => `<div class="kpi ${o.tone || ''}"><div class="kpi-b"><div class="k">${o.icon ? chipIc(o.icon) : ''}<span>${k}</span></div><div class="v">${v}</div>${o.sub ? `<div class="sub">${o.sub}</div>` : ''}</div>${o.ring != null ? ring(o.ring, o.color, o.ringText) : ''}</div>`;
+const verdict = (tone, icon, body) => `<div class="verdict ${tone || ''}"><span class="vi">${ic(icon)}</span><div>${body}</div></div>`;
+const empty = (icon, title, body, actions = '') => `<div class="empty">${chipIc(icon)}<b>${title}</b><p>${body}</p>${actions ? `<div class="actions" style="margin-top:4px;justify-content:center">${actions}</div>` : ''}</div>`;
+const nextBtn = (hash, label) => `<a class="btn primary" href="#${hash}">${label}${ic('next')}</a>`;
+
+const isDark = () => document.documentElement.dataset.theme ? document.documentElement.dataset.theme === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+function chrome(){
+  const hasRows = !!(S.rows && S.rows.length), calibrated = !!(S.cal && S.mon);
+  const state = { overview: 'ready', iqc: 'ready', data: hasRows ? 'done' : 'ready', law: hasRows ? 'ready' : 'wait', calibrate: calibrated ? 'done' : (hasRows ? 'ready' : 'wait'), monitor: calibrated ? 'ready' : 'wait', simulate: calibrated ? 'ready' : 'wait', check: calibrated ? 'ready' : 'wait', plan: 'ready' };
+  document.querySelectorAll('nav.steps a').forEach(a => { a.dataset.state = state[a.getAttribute('href').slice(1)] || 'ready'; });
+  let chips = '';
+  if (hasRows) { const r = S.rows; chips += `<span class="chip">${ic('data')}${r.length.toLocaleString()} results</span><span class="chip">${ic('calendar')}${fmtDay(r[0].t)} – ${fmtDay(r[r.length - 1].t)}</span>`; }
+  else chips += `<span class="chip idle">${ic('data')}No data loaded</span>`;
+  chips += S.cal ? `<span class="chip ok">${ic('ok')}Calibrated · β ${fmt(S.cal.beta, 3)}</span>` : `<span class="chip idle">${ic('gauge')}Not calibrated</span>`;
+  document.querySelectorAll('[data-chips]').forEach(e => { e.innerHTML = chips; });
+  $('btnTheme').innerHTML = ic(isDark() ? 'sun' : 'moon');
+  const nav = document.querySelector('nav.steps'), cur = nav.querySelector('[aria-current="page"]');
+  if (cur && nav.scrollWidth > nav.clientWidth) nav.scrollLeft = Math.max(0, cur.offsetLeft - (nav.clientWidth - cur.offsetWidth) / 2);
+}
+
+/* ---------- views ---------- */
+function render(v){ ({ overview: vOverview, iqc: vIQC, data: vData, law: vLaw, calibrate: vCal, monitor: vMon, simulate: vSim, check: vChk, plan: vPlan })[v](); }
+const needData = id => { if (S.rows && S.rows.length) return false;
+  $(id).innerHTML = empty('data', 'No results loaded yet', 'Open an LIS export or try the demo data to continue.', `<button class="primary" data-act="demo">${ic('play')}Load demo data</button><button data-act="open">${ic('upload')}Open LIS export</button>`); return true; };
+const needCal = id => { if (needData(id)) return true; if (S.cal && S.mon) return false;
+  $(id).innerHTML = empty('gauge', 'Calibrate first', 'PartnerQC needs the normal HbA1c–glucose relation in your laboratory before it can check results.', `<a class="btn primary" href="#calibrate">Go to Calibrate${ic('next')}</a>`); return true; };
+
+const HERO_FIG = `<svg viewBox="0 0 520 250" role="img" aria-label="Line chart of a moving average that stays inside the limits and then rises above the upper alarm limit"><rect x="44" y="45" width="460" height="160" fill="var(--ok)" opacity=".08"/><line x1="44" x2="504" y1="125" y2="125" stroke="var(--line)" stroke-width="1.2"/><line x1="44" x2="504" y1="77.0" y2="77.0" stroke="var(--watch)" stroke-width="1.2" stroke-dasharray="4 4"/><line x1="44" x2="504" y1="173.0" y2="173.0" stroke="var(--watch)" stroke-width="1.2" stroke-dasharray="4 4"/><line x1="44" x2="504" y1="45" y2="45" stroke="var(--alarm)" stroke-width="1.4"/><line x1="44" x2="504" y1="205" y2="205" stroke="var(--alarm)" stroke-width="1.4"/><line x1="336.1" x2="336.1" y1="22" y2="219" stroke="var(--ink)" stroke-width="1.2" stroke-dasharray="2 3" opacity=".6"/><polyline points="44.0,128.0 51.3,120.9 58.6,125.0 65.9,128.7 73.2,138.4 80.5,136.2 87.8,119.2 95.1,116.2 102.4,107.1 109.7,110.4 117.0,110.9 124.3,113.7 131.6,137.2 138.9,122.9 146.2,117.7 153.5,114.4 160.8,138.0 168.1,153.9 175.4,154.3 182.7,149.5 190.0,137.4 197.3,133.6 204.6,124.4 211.9,132.2 219.2,126.0 226.5,121.0 233.8,130.2 241.1,108.2 248.4,107.5 255.7,99.6 263.0,115.8 270.3,127.7 277.7,130.8 285.0,130.0 292.3,120.8 299.6,119.4 306.9,126.6 314.2,137.3 321.5,139.1 328.8,119.8 336.1,131.1 343.4,124.0 350.7,115.2 358.0,130.0 365.3,119.4 372.6,95.6 379.9,117.2 387.2,109.2 394.5,99.4 401.8,99.4 409.1,81.8 416.4,74.9 423.7,84.8 431.0,62.2 438.3,47.4 445.6,32.4 452.9,14.7 460.2,13.9 467.5,14.1 474.8,28.9 482.1,13.9 489.4,16.5 496.7,14.3 504.0,20.3" fill="none" stroke="var(--spread)" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/><path d="M445.6 15.4l7.5 13h-15z" fill="var(--alarm)" stroke="var(--solid)" stroke-width="1.5" stroke-linejoin="round"/><g font-family="inherit" font-size="11" font-weight="700" fill="var(--muted)"><text x="36" y="49" text-anchor="end">+1</text><text x="36" y="129" text-anchor="end">0</text><text x="36" y="209" text-anchor="end">−1</text><text x="329.1" y="32" text-anchor="end" font-weight="600">HbA1c starts to drift</text></g><text x="432.6" y="21.4" text-anchor="end" font-family="inherit" font-size="11" font-weight="700" fill="var(--alarm-ink)">Alarm</text></svg>`;
+
+const heroHTML = () => `<div class="panel hero"><div><h3>Bring your HbA1c and glucose results</h3>
+      <p>Open an LIS export or try the demo data. PartnerQC finds the columns for you and checks every HbA1c result against the glucose from the same sample.</p>
+      <div class="cta"><button class="btn primary lg" id="heroOpen">${ic('upload')}Open LIS export</button><button class="btn lg" id="heroDemo">${ic('play')}Load demo data</button></div>
+      <ul class="req"><li>${ic('data')}HbA1c</li><li>${ic('drop')}Glucose</li><li>${ic('clock')}Collection time</li><li>${ic('user')}Sample ID</li></ul>
+      <p class="note">Column names are detected automatically, in English or Vietnamese. You can also drop a .csv or .xlsx file anywhere on this page.</p></div>
+      <figure class="fig" style="margin:0">${HERO_FIG}<figcaption>Example: the moving average crosses the alarm limit as HbA1c drifts, before the next IQC run.</figcaption></figure></div>`;
+function showHero(el){ el.innerHTML = heroHTML(); $('heroOpen').onclick = () => $('file').click(); $('heroDemo').onclick = loadDemo; }
+
+const STEPS = [
+  ['data', 'data', 'Data', 'Load an LIS export with HbA1c and glucose'],
+  ['law', 'law', 'Distribution law', 'Check the HbA1c–glucose relation in your data'],
+  ['calibrate', 'gauge', 'Calibrate', 'Set the centre, width and alarm limit'],
+  ['monitor', 'monitor', 'Monitor', 'Follow the moving average and the alarms'],
+  ['iqc', 'chartline', 'IQC methods', 'Compare Westgard rules, EWMA and CUSUM on control results'],
+  ['simulate', 'flask', 'Simulate', 'Compare QC strategies on your own results'],
+  ['check', 'shield', 'Check result', 'Test one HbA1c result against its glucose'],
+  ['plan', 'calendar', 'QC plan', 'Estimate how often IQC needs to run']];
+function vOverview(){
+  const el = $('ovBody');
+  if (!(S.rows && S.rows.length)) { showHero(el); return; }
+  const r = S.rows, g = r.filter(x => x.G).length;
+  if (!(S.cal && S.mon)) {
+    el.innerHTML = `<div class="facts">
+      ${kpi(r.length.toLocaleString(), 'HbA1c results', { icon: 'data', tone: 'hb' })}
+      ${kpi(g.toLocaleString(), 'with glucose in the same sample', { icon: 'drop', tone: 'glu', ring: g / r.length, color: 'var(--glucose)' })}
+      ${kpi(fmt(S.perWeekday, 0), 'HbA1c results per weekday', { icon: 'calendar' })}
+      ${kpi(`${fmt(S.span + 1, 0)} days`, `${fmtDay(r[0].t)} to ${fmtDay(r[r.length - 1].t)}`, { icon: 'clock' })}</div>
+      <div class="card"><div class="card-h"><div><h3>Next step: calibrate</h3><p class="sub">PartnerQC needs the normal HbA1c–glucose spread of your laboratory before it can watch the results.</p></div><a class="btn primary" href="#calibrate">Calibrate now${ic('next')}</a></div>
+      <div class="stp">${STEPS.map(([h, i, t, d]) => { const done = h === 'data'; const next = h === 'calibrate'; return `<a href="#${h}" class="${next ? 'next' : ''}">${chipIc(i)}<span class="tx"><b>${t}</b><small>${d}</small></span>${done ? ic('ok', 'st') : ''}</a>`; }).join('')}</div></div>`;
+    return;
+  }
+  const m = S.mon, c = S.cal, al = m.filter(x => x.status === 'alarm'), paired = m.filter(x => x.status !== 'no_partner'), disc = paired.filter(x => x.discordant).length;
+  const days = (m[m.length - 1].t - m[0].t) / 86400000 + 1, rate = al.length / days, target = c.false_alarms_per_day;
+  const pr = r.filter(x => x.G), bUsed = (S.betaChoice === 'local' && S.law) ? S.law.beta : PQ.REF_BETA, la = pr.map(x => Math.log(x.A)), sp = pr.map(x => Math.log(x.A) - bUsed * Math.log(x.G));
+  const removed = Math.max(0, 1 - (PQ.sd(sp) / PQ.sd(la)) ** 2), cov = g / r.length;
+  const pl = PQ.plan({ cva: S.assay.cva, tea: S.assay.tea, n: Math.round(S.perWeekday), coverage: S.coverage, sdSpread: c.sd, sdAlone: c.alone.sd });
+  const lastRows = paired.slice(-7).reverse(), recent = al.slice(-4).reverse();
+  const sIcon = { ok: 'ok', watch: 'info', alarm: 'alert' }, sLab = { ok: 'Consistent', watch: 'Watch', alarm: 'Alarm' };
+  el.innerHTML = `<div class="facts">
+      ${kpi(paired.length.toLocaleString(), 'results checked against glucose', { icon: 'data' })}
+      ${kpi(al.length, `alarms (${fmt(rate, 2)} per day)`, { icon: 'alert', tone: al.length ? 'alarm' : 'ok' })}
+      ${kpi(`${fmt(100 * disc / Math.max(paired.length, 1), 1)}%`, 'single samples discordant with their glucose', { icon: 'info', tone: 'watch' })}
+      ${kpi(fmt(c.h, 3), 'alarm limit for the moving average', { icon: 'shield', tone: 'hb' })}</div>
+    <div class="dash">
+      <div class="card c8"><div class="card-h"><div><h3>Moving average of the HbA1c–glucose spread</h3><p class="sub">Fraction of the alarm limit. An alarm is raised beyond ±1.</p></div><a class="go" href="#monitor">Open monitor →</a></div>
+        <div class="chartbox"><canvas id="cOv" aria-label="Moving average of the HbA1c–glucose spread over time"></canvas></div></div>
+      <div class="card c4"><div class="card-h"><div><h3>Monitoring health</h3><p class="sub">How well glucose explains HbA1c here</p></div></div>
+        <div class="big"><b>${fmt(100 * cov, 0)}%</b><span>of results have a glucose partner</span></div>
+        <div class="pbar" role="img" aria-label="${fmt(100 * cov, 0)}% paired"><i style="width:${(100 * cov).toFixed(0)}%"></i></div><div class="pbar-l"><span>0%</span><span>100%</span></div>
+        <div class="minis">
+          <div class="mini">${ring(removed, 'var(--ok)', '')}<div><b>${fmt(100 * removed, 0)}%</b><small>variance removed by glucose</small></div></div>
+          <div class="mini">${ring(rate / target, rate > 2 * target ? 'var(--watch)' : 'var(--spread)', '')}<div><b>${fmt(rate, 2)}</b><small>alarms/day, target ${fmt(target, 2)}</small></div></div>
+          <div class="mini">${ring(disc / Math.max(paired.length, 1), 'var(--watch)', '')}<div><b>${fmt(100 * disc / Math.max(paired.length, 1), 1)}%</b><small>discordant samples</small></div></div>
+          <div class="mini">${chipIc('law')}<div><b>${fmt(c.beta, 3)}</b><small>β used</small></div></div></div></div>
+      <div class="card c8"><div class="card-h"><div><h3>Latest results</h3><p class="sub">Most recent HbA1c results checked against glucose</p></div><a class="go" href="#check">Check a result →</a></div>
+        <div class="tbl fit"><table><thead><tr><th>Sample</th><th>Collected</th><th class="num">HbA1c (%)</th><th class="num">Glucose (mmol/L)</th><th>Status</th><th class="num">Running average</th></tr></thead><tbody>
+        ${lastRows.map(x => `<tr><td>${esc(x.id)}</td><td class="nw">${fmtDate(x.t)}</td><td class="num">${fmt(x.A, 1)}</td><td class="num">${fmt(x.G, 1)}</td><td><span class="pill ${x.status}">${sLab[x.status]}</span></td><td class="num"><div class="cellbar"><span class="bar"><i style="width:${Math.min(100, 100 * Math.abs(x.level)).toFixed(0)}%;background:${x.status === 'alarm' ? 'var(--alarm)' : x.status === 'watch' ? 'var(--watch)' : 'var(--spread)'}"></i></span>${fmt(x.level, 2)}</div></td></tr>`).join('')}</tbody></table></div></div>
+      <div class="card c4"><div class="card-h"><div><h3>Needs attention</h3><p class="sub">${al.length > recent.length ? `Latest ${recent.length} of ${al.length} alarms` : al.length === 1 ? '1 alarm in this period' : al.length ? `${al.length} alarms in this period` : 'No alarms in this period'}</p></div><a class="go" href="#monitor">All alarms →</a></div>
+        ${recent.length ? recent.map(a => `<div class="att">${chipIc('alert').replace('chip-ic', 'chip-ic" style="background:var(--alarm-soft);color:var(--alarm)')}<div class="tx"><div class="tt"><b>${esc(a.id)}</b><span class="tm">${fmtDate(a.t)}</span></div><p>${esc(a.advice)}</p></div></div>`).join('') : verdict('ok', 'ok', 'Every result in this period agreed with its glucose.')}</div>
+      <div class="card insight c12"><div class="card-h" style="position:relative"><div style="display:flex;gap:12px;align-items:center">${chipIc('bolt')}<div><h3>QC plan insight</h3><p class="sub">From your CV, allowable error and daily volume</p></div></div><div class="actions" style="margin:0"><a class="btn" href="#iqc">${ic('chartline')}Compare IQC methods</a><a class="btn" href="#simulate">${ic('flask')}Simulate an error</a><a class="btn primary" href="#plan">Open QC plan${ic('next')}</a></div></div>
+        <p class="rec">${esc(pl.rec)}</p>
+        <div class="minis"><div class="mini"><b>${fmt(pl.runsMonth, 0)} vs 90</b><small>IQC runs per month, this plan vs 3×/day</small></div><div class="mini"><b>${fmt(pl.sigma, 1)}</b><small>sigma (allowable error ÷ CV)</small></div><div class="mini"><b>${fmt(pl.frMonth, 2)} vs ${fmt(pl.frIQC3, 2)}</b><small>false rejections per month</small></div></div></div>
+    </div>`;
+  drawMon('cOv');
+}
+
+function vData(){
+  const el = $('dataBody');
+  if (!S.raw && !(S.rows && S.rows.length)) { showHero(el); return; }
+  let side = '', main = '';
+  if (S.raw) {
+    const opts = sel => ['<option value="-1">(none)</option>', ...S.raw.names.map((n, i) => `<option value="${i}" ${i === sel ? 'selected' : ''}>${esc(n)}</option>`)].join('');
+    side = `<div class="panel"><h3 class="ph">${chipIc('data')}Columns in ${esc(S.raw.file)}</h3>
+      <label for="mA">HbA1c</label><select id="mA">${opts(S.map.A)}</select>
+      <label for="mG">Glucose (same sample)</label><select id="mG">${opts(S.map.G)}</select>
+      <label for="mT">Sample collection time</label><select id="mT">${opts(S.map.T)}</select>
+      <label for="mI">Sample ID</label><select id="mI">${opts(S.map.I)}</select>
+      <div class="row2"><div><label for="mAU">HbA1c unit</label><select id="mAU"><option value="auto">Detect</option><option>%</option><option>mmol/mol</option></select></div>
+      <div><label for="mGU">Glucose unit</label><select id="mGU"><option value="auto">Detect</option><option>mmol/L</option><option>mg/dL</option></select></div></div>
+      <label class="check"><input type="checkbox" id="mDF" ${S.map.dayFirst ? 'checked' : ''}>Dates are written day first (dd/mm)</label>
+      <label class="check"><input type="checkbox" id="mSW" ${S.map.swap ? 'checked' : ''}>Swap day and month in cells stored as Excel dates</label>
+      <p class="note">Some LIS exports store dd/mm dates as Excel dates that were read as mm/dd whenever the day is 12 or less. PartnerQC ticks this box when it sees that pattern.</p>
+      <div class="actions"><button class="primary" id="mApply">Apply</button></div></div>`;
+  }
+  if (S.rows && S.rows.length) {
+    const r = S.rows, g = r.filter(x => x.G).length;
+    main = `<div class="facts ${S.raw ? 'pair' : ''}">
+      ${kpi(r.length.toLocaleString(), 'HbA1c results', { icon: 'data', tone: 'hb' })}
+      ${kpi(g.toLocaleString(), 'with glucose in the same sample', { icon: 'drop', tone: 'glu', ring: g / r.length, color: 'var(--glucose)' })}
+      ${kpi(fmt(S.perWeekday, 0), 'HbA1c results per weekday', { icon: 'calendar' })}
+      ${kpi(`${fmt(S.span + 1, 0)} days`, `${fmtDay(r[0].t)} to ${fmtDay(r[r.length - 1].t)}`, { icon: 'clock' })}</div>
+      <div class="card"><div class="card-h"><div><h3>Preview</h3><p class="sub">First 8 of ${r.length.toLocaleString()} results, in collection order</p></div></div>
+      <div class="tbl"><table><thead><tr><th>Sample</th><th>Collected</th><th class="num">HbA1c (%)</th><th class="num">Glucose (mmol/L)</th></tr></thead><tbody>
+      ${r.slice(0, 8).map(x => `<tr><td>${esc(x.id)}</td><td class="nw">${fmtDate(x.t)}</td><td class="num">${fmt(x.A, 1)}</td><td class="num">${x.G ? fmt(x.G, 1) : '–'}</td></tr>`).join('')}</tbody></table></div>
+      <div class="actions">${nextBtn('law', 'Next: distribution law')}</div></div>`;
+  } else main = empty('data', 'Choose the HbA1c column', 'Pick the column that holds HbA1c results and press Apply.');
+  el.innerHTML = S.raw ? `<div class="grid">${side}<div>${main}</div></div>` : main;
+  if (S.raw) {
+    $('mAU').value = S.map.aUnit; $('mGU').value = S.map.gUnit;
+    $('mApply').onclick = () => { Object.assign(S.map, { A: +$('mA').value, G: +$('mG').value, T: +$('mT').value, I: +$('mI').value, aUnit: $('mAU').value, gUnit: $('mGU').value, dayFirst: $('mDF').checked, swap: $('mSW').checked }); buildRows(); vData(); chrome(); };
+  }
+}
+
+function vLaw(){
+  if (needData('lawBody')) return;
+  const pairs = S.rows.filter(r => r.G); if (pairs.length < 50) { $('lawBody').innerHTML = empty('law', 'Not enough paired results', `At least 50 results with both HbA1c and glucose are needed. This file has ${pairs.length}.`); return; }
+  const law = S.law || (S.law = PQ.fitLaw(pairs.map(p => p.A), pairs.map(p => p.G), 200));
+  const b = S.betaChoice === 'local' ? law.beta : PQ.REF_BETA;
+  const la = pairs.map(p => Math.log(p.A)), sp = pairs.map(p => Math.log(p.A) - b * Math.log(p.G));
+  const removed = 1 - (PQ.sd(sp) / PQ.sd(la)) ** 2;
+  $('lawBody').innerHTML = `<div class="facts">
+      ${kpi(fmt(law.beta), `local β (95% CI ${fmt(law.ci[0])}–${fmt(law.ci[1])})`, { icon: 'law', tone: 'hb' })}
+      ${kpi(fmt(PQ.REF_BETA, 3), 'reference β', { icon: 'law', tone: 'glu' })}
+      ${kpi(`${fmt(100 * removed, 0)}%`, 'between-patient variance removed by glucose', { icon: 'drop', tone: 'ok', ring: removed, color: 'var(--ok)', ringText: '' })}
+      ${kpi(`+${fmt(100 * (PQ.sd(la) / PQ.sd(sp) - 1), 0)}%`, 'gain in detectability of HbA1c bias', { icon: 'bolt', tone: 'ok' })}</div>
+    <div class="grid"><div class="panel"><h3 class="ph">${chipIc('law')}Which β to use</h3>
+      <label class="opt"><input type="radio" name="beta" value="ref" ${S.betaChoice !== 'local' ? 'checked' : ''}><span><b>Reference β</b><small>Recommended; it transfers between populations.</small></span></label>
+      <label class="opt"><input type="radio" name="beta" value="local" ${S.betaChoice === 'local' ? 'checked' : ''}><span><b>Local β</b><small>Fitted on this file only.</small></span></label>
+      <p class="note">Correlation of log HbA1c and log glucose: ${fmt(law.r)}. ${pairs.length.toLocaleString()} paired results. Reference β comes from three Vietnamese hospitals, NHANES and two laboratory streams (0.65–0.69).</p>
+      <div class="actions">${nextBtn('calibrate', 'Next: calibrate')}</div></div>
+      <div class="card"><div class="card-h"><div><h3>HbA1c quantiles against glucose quantiles</h3><p class="sub">Log scales, 2nd to 98th percentile</p></div></div>
+      <div class="chartbox tall"><canvas id="cLaw" aria-label="Quantiles of HbA1c against quantiles of glucose on log scales"></canvas></div></div></div>`;
+  document.querySelectorAll('input[name=beta]').forEach(r => r.onchange = () => { S.betaChoice = r.value; S.cal = null; S.mon = null; vLaw(); chrome(); });
+  const pts = law.qg.map((g, i) => ({ x: Math.exp(g), y: Math.exp(law.qa[i]) }));
+  const mid = Math.floor(law.qg.length / 2), aRef = law.qa[mid] - PQ.REF_BETA * law.qg[mid];
+  const line = (beta, alpha) => [law.qg[0], law.qg[law.qg.length - 1]].map(g => ({ x: Math.exp(g), y: Math.exp(alpha + beta * g) }));
+  drawChart('cLaw', { type: 'scatter', data: { datasets: [
+      { label: 'Quantile pairs (2nd–98th percentile)', data: pts, pointRadius: 4.5, pointHoverRadius: 6, backgroundColor: css('--spread'), borderColor: css('--solid'), borderWidth: 1.5 },
+      { label: `Local fit, β = ${fmt(law.beta)}`, data: line(law.beta, law.alpha), showLine: true, pointRadius: 0, borderColor: css('--hba1c'), borderWidth: 2.5 },
+      { label: `Reference β = ${PQ.REF_BETA}`, data: line(PQ.REF_BETA, aRef), showLine: true, pointRadius: 0, borderColor: css('--glucose'), borderDash: [7, 5], borderWidth: 2.5 }] },
+    options: baseOpts({ x: { type: 'logarithmic', title: 'Glucose quantile (mmol/L)' }, y: { type: 'logarithmic', title: 'HbA1c quantile (%)' } }) });
+}
+
+function vCal(){
+  if (needData('calBody')) return;
+  const r = S.rows, t0 = r[0].t;
+  $('calBody').innerHTML = `<div class="grid"><div class="panel"><h3 class="ph">${chipIc('gauge')}Baseline and alarm rate</h3>
+    <label for="cBase">Baseline: first … days of the file</label><input id="cBase" type="number" min="2" max="${Math.ceil(S.span)}" value="${S.baseDays}">
+    <label for="cRpd">Paired HbA1c–glucose results per weekday</label><input id="cRpd" type="number" min="5" value="${S.resultsPerDay}">
+    <div class="row2"><div><label for="cFA">False alarms per day</label><input id="cFA" type="number" step="0.05" min="0.02" value="0.10"></div>
+    <div><label for="cLam">EWMA weight λ</label><input id="cLam" type="number" step="0.005" min="0.005" max="0.2" value="0.02"></div></div>
+    <p class="note">0.10 false alarms per day means about three alarms a month while the analyser is in control. Each alarm costs one IQC run, not a rejection.</p>
+    <div class="actions"><button class="primary" id="cGo">Calibrate</button></div></div>
+    <div id="calOut">${S.cal ? '' : empty('gauge', 'Set the baseline and press Calibrate', 'PartnerQC learns the normal HbA1c–glucose spread from the first days of the file.')}</div></div>`;
+  $('cGo').onclick = () => { $('cGo').disabled = true; $('cGo').textContent = 'Calibrating…'; setTimeout(() => {
+      S.baseDays = +$('cBase').value; S.resultsPerDay = +$('cRpd').value;
+      const cut = t0 + S.baseDays * 86400000; S.base = r.filter(x => x.t < cut); S.test = r.filter(x => x.t >= cut);
+      const bp = S.base.filter(x => x.G);
+      if (bp.length < 50 || S.test.length < 20) { $('calOut').innerHTML = empty('gauge', 'Baseline too short or too long', 'The baseline needs at least 50 paired results and some results must remain after it. Change the number of days.'); $('cGo').disabled = false; $('cGo').textContent = 'Calibrate'; return; }
+      S.cal = PQ.calibrate(bp, { beta: S.betaChoice === 'local' ? 'local' : null, lam: +$('cLam').value, resultsPerDay: S.resultsPerDay, faPerDay: +$('cFA').value });
+      const m = PQ.monitor(S.cal, S.test); S.mon = m.records; S.live = m.e; store(); showCal(); chrome(); $('cGo').disabled = false; $('cGo').textContent = 'Calibrate'; }, 30); };
+  if (S.cal && S.mon) showCal();
+}
+function showCal(){
+  const c = S.cal, days = (S.test[S.test.length - 1].t - S.test[0].t) / 86400000 + 1, al = S.mon.filter(m => m.status === 'alarm').length, rate = al / days;
+  $('calOut').innerHTML = `<div class="facts">
+    ${kpi(fmt(c.beta, 3), 'β used', { icon: 'law' })}
+    ${kpi(fmt(c.center, 3), 'local centre of the spread (α)', { icon: 'gauge' })}
+    ${kpi(fmt(c.sd, 3), 'SD of the spread (log units)', { icon: 'law', tone: 'glu' })}
+    ${kpi(fmt(c.h, 3), 'alarm limit for the moving average', { icon: 'shield', tone: 'alarm' })}
+    ${kpi(c.n_baseline.toLocaleString(), 'baseline pairs', { icon: 'data', tone: 'hb' })}
+    ${kpi(fmt(rate, 2), `alarms per day after the baseline (target ${fmt(c.false_alarms_per_day, 2)})`, { icon: 'alert', tone: rate > 2 * c.false_alarms_per_day ? 'watch' : 'ok' })}</div>
+    <div class="card"><p class="note" style="margin-top:0">If alarms after the baseline are far above the target, the patient mix or the analyser changed during that period. Split the stream by analyser if more than one measures HbA1c or glucose.</p>
+    <div class="actions"><button id="dlCal">${ic('download')}Download parameters for the PartnerQC service (JSON)</button>${nextBtn('monitor', 'Next: monitor')}</div></div>`;
+  $('dlCal').onclick = () => { const k = ['beta', 'center', 'sd', 'lo', 'hi', 'lam', 'h', 'results_per_day', 'false_alarms_per_day', 'local_beta', 'r', 'n_baseline']; download('partnerqc_params.json', JSON.stringify(Object.fromEntries(k.map(x => [x, S.cal[x]])), null, 2), 'application/json'); };
+}
+function download(name, text, type){ const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type })); a.download = name; document.body.appendChild(a); a.click(); a.remove(); }
+
+function vMon(){
+  if (needCal('monBody')) return;
+  const m = S.mon, al = m.filter(x => x.status === 'alarm'), paired = m.filter(x => x.status !== 'no_partner'), disc = paired.filter(x => x.discordant).length;
+  const days = (m[m.length - 1].t - m[0].t) / 86400000 + 1;
+  $('monBody').innerHTML = `<div class="facts">
+      ${kpi(paired.length.toLocaleString(), 'results checked against glucose', { icon: 'data' })}
+      ${kpi(al.length, `alarms (${fmt(al.length / days, 2)} per day)`, { icon: 'alert', tone: al.length ? 'alarm' : 'ok' })}
+      ${kpi(`${fmt(100 * disc / Math.max(paired.length, 1), 1)}%`, 'single samples discordant with their glucose', { icon: 'info', tone: 'watch' })}</div>
+    <div class="card"><div class="card-h"><div><h3>Moving average of the HbA1c–glucose spread</h3><p class="sub">Fraction of the alarm limit. An alarm is raised beyond ±1.</p></div>
+      <div class="legend"><span class="lg" style="--c:var(--spread)"><i></i>HbA1c checked against glucose</span>
+      <label class="lg" style="--c:var(--hba1c)"><input type="checkbox" id="showA" ${S.showA ? 'checked' : ''}><i></i>HbA1c alone</label>
+      <label class="lg" style="--c:var(--glucose)"><input type="checkbox" id="showG" ${S.showG ? 'checked' : ''}><i></i>Glucose alone</label></div></div>
+      <div class="chartbox tall"><canvas id="cMon" aria-label="Moving average of the HbA1c–glucose spread over time"></canvas></div></div>
+    <div class="card" style="margin-top:18px"><div class="card-h"><div><h3>Alarms</h3><p class="sub">${al.length ? `${al.length} in this period` : 'None in this period'}</p></div>${al.length ? `<button id="dlAl">${ic('download')}Download alarms (CSV)</button>` : ''}</div>
+      ${al.length ? `<div class="tbl"><table><thead><tr><th>Time</th><th>Sample</th><th>What to do</th></tr></thead><tbody>${al.map(a => `<tr><td class="nw">${fmtDate(a.t)}</td><td>${esc(a.id)}</td><td>${esc(a.advice)}</td></tr>`).join('')}</tbody></table></div>` : verdict('ok', 'ok', 'No alarms in this period.')}</div>`;
+  $('showA').onchange = e => { S.showA = e.target.checked; drawMon(); }; $('showG').onchange = e => { S.showG = e.target.checked; drawMon(); };
+  if ($('dlAl')) $('dlAl').onclick = () => download('partnerqc_alarms.csv', 'time,sample_id,advice\n' + al.map(a => `${fmtDate(a.t)},${a.id},"${a.advice.replace(/"/g, "'")}"`).join('\n'), 'text/csv');
+  drawMon();
+}
+function series(recs, key, step){ const out = []; for (let i = 0; i < recs.length; i += step) { const r = recs[i]; if (r[key] != null) out.push({ x: r.t, y: Math.max(-2.5, Math.min(2.5, r[key])) }); } return out; }
+function drawMon(target = 'cMon', recs = S.mon, extra = []){
+  const step = Math.max(1, Math.floor(recs.length / 4000)), x0 = recs[0].t, x1 = recs[recs.length - 1].t;
+  const hl = (y, c, dash) => ({ data: [{ x: x0, y }, { x: x1, y }], showLine: true, pointRadius: 0, borderColor: c, borderWidth: 1.2, borderDash: dash, label: '' });
+  const ds = [hl(1, css('--alarm'), []), hl(-1, css('--alarm'), []), hl(0.6, css('--watch'), [4, 4]), hl(-0.6, css('--watch'), [4, 4]),
+    { label: 'HbA1c checked against glucose', data: series(recs.filter(r => r.level != null), 'level', step), showLine: true, pointRadius: 0, borderColor: css('--spread'), borderWidth: 2.2 }];
+  if (S.showA) ds.push({ label: 'HbA1c alone', data: series(recs, 'levelA', step), showLine: true, pointRadius: 0, borderColor: css('--hba1c'), borderWidth: 1.4 });
+  if (S.showG) ds.push({ label: 'Glucose alone', data: series(recs, 'levelG', step), showLine: true, pointRadius: 0, borderColor: css('--glucose'), borderWidth: 1.4 });
+  ds.push({ label: 'Alarm', data: recs.filter(r => r.status === 'alarm').map(r => ({ x: r.t, y: r.level > 0 ? 1.05 : -1.05 })), pointRadius: 7, pointStyle: 'triangle', backgroundColor: css('--alarm'), borderColor: css('--solid'), borderWidth: 1.5 }, ...extra);
+  drawChart(target, { type: 'scatter', data: { datasets: ds }, plugins: [zonePlugin(MON_ZONES)], options: baseOpts({ x: { type: 'linear', title: '', time: true }, y: { min: -2.5, max: 2.5, title: 'Moving average, fraction of the alarm limit' } }, false) });
+}
+
+function vSim(){
+  if (needCal('simBody')) return;
+  const crit = Math.max(S.assay.tea / S.assay.cva - 1.65, 0) * S.assay.cva, test = S.test;
+  const flow = flowHours(); const def = new Date(test[0].t + 2 * 86400000); def.setHours(8, 0, 0, 0);
+  const local = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}T${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+  $('simBody').innerHTML = `<div class="grid"><div class="panel"><h3 class="ph">${chipIc('flask')}Error to simulate</h3>
+      <label for="sType">Error</label><select id="sType"><option value="bias">HbA1c sudden shift</option><option value="drift">HbA1c drift over 24 hours</option><option value="imprecision">HbA1c imprecision</option><option value="glucose">Glucose sudden shift</option></select>
+      <div class="row2"><div><label for="sSize" id="sSizeL">Size (%)</label><input id="sSize" type="number" step="0.1" value="${fmt(crit, 1)}"></div>
+      <div><label for="sDir">Direction</label><select id="sDir"><option value="1">Higher</option><option value="-1">Lower</option></select></div></div>
+      <label for="sStart">Error starts at</label><input id="sStart" type="datetime-local" value="${local(def)}">
+      <div class="row2"><div><label for="sCva">HbA1c CV (%)</label><input id="sCva" type="number" step="0.1" value="${S.assay.cva}"></div><div><label for="sTea">Allowable error (%)</label><input id="sTea" type="number" step="0.5" value="${S.assay.tea}"></div></div>
+      <p class="note">Critical shift for this CV and allowable error: ${fmt(crit, 1)}%. Critical imprecision: CV × ${fmt(S.assay.tea / S.assay.cva / 1.65, 1)}.</p>
+      <hr class="sep"><h3 class="ph">${chipIc('clock')}Strategies to compare</h3>
+      <label for="s3a">IQC 3×/day by shift</label><input id="s3a" value="05:00, 13:00, 21:00">
+      <label for="s3b">IQC 3×/day spread over the sample flow</label><input id="s3b" value="${flow.three.map(hhmm).join(', ')}">
+      <label for="s2">IQC 2×/day (start of day and mid-flow)</label><input id="s2" value="${flow.two.map(hhmm).join(', ')}">
+      <label for="s1">IQC once daily</label><input id="s1" value="05:00">
+      <p class="note">PartnerQC runs with the once-daily and twice-daily schedules. Its alarms trigger an IQC run, and results are rejected only if IQC confirms the error.</p>
+      <div class="actions"><button class="primary" id="sGo">${ic('play')}Run this scenario</button><button id="sRep">Repeat 200 times at random start times</button></div></div>
+      <div id="simOut">${empty('flask', 'Choose an error and press Run', 'You will see when PartnerQC raises its alarm and how many unacceptable results each strategy lets through.')}</div></div>`;
+  const upd = () => { const t = $('sType').value; $('sSizeL').textContent = t === 'imprecision' ? 'CV multiplied by' : 'Size (%)'; $('sSize').value = t === 'imprecision' ? fmt(S.assay.tea / S.assay.cva / 1.65, 1) : fmt(Math.max(+$('sTea').value / +$('sCva').value - 1.65, 0) * +$('sCva').value, 1); $('sDir').disabled = t === 'imprecision'; };
+  $('sType').onchange = upd;
+  ['sCva', 'sTea'].forEach(id => $(id).onchange = () => { S.assay = { cva: +$('sCva').value, tea: +$('sTea').value }; store(); upd(); });
+  $('sGo').onclick = () => runSim(false); $('sRep').onclick = () => runSim(true);
+}
+function flowHours(){ const hs = S.base.map(r => { const d = new Date(r.t); return d.getHours() + d.getMinutes() / 60; }).sort((a, b) => a - b); const qq = p => hs[Math.floor(p * (hs.length - 1))]; return { three: [5, qq(1 / 3), qq(2 / 3)], two: [5, qq(0.5)] }; }
+const hrs = s => s.split(',').map(PQ.hourOf).filter(isFinite);
+const hhmm = h => `${String(Math.floor(h)).padStart(2, '0')}:${String(Math.round((h % 1) * 60) % 60).padStart(2, '0')}`;
+function schedules(){ return [
+  { name: 'IQC 3×/day by shift', hours: hrs($('s3a').value) },
+  { name: 'IQC 3×/day spread over the flow', hours: hrs($('s3b').value) },
+  { name: 'IQC 2×/day', hours: hrs($('s2').value) },
+  { name: 'IQC once daily', hours: hrs($('s1').value) },
+  { name: 'IQC once daily + PartnerQC', hours: hrs($('s1').value), partner: true },
+  { name: 'IQC 2×/day + PartnerQC', hours: hrs($('s2').value), partner: true }]; }
+function runSim(repeat){
+  const test = S.test, type = $('sType').value, spec = { type, size: +$('sSize').value, sign: +$('sDir').value }, opts = { cva: +$('sCva').value / 100, tea: +$('sTea').value / 100 };
+  const sch = schedules(), out = $('simOut');
+  if (!repeat) {
+    const st = new Date($('sStart').value).getTime(); let onset = test.findIndex(r => r.t >= st); if (onset < 0) onset = Math.floor(test.length / 2);
+    const c = PQ.compare(S.cal, test, onset, spec, sch, { ...opts, seed: 5 });
+    const fa = c.firstAlarm, win = c.mon.filter(r => r.t >= test[onset].t - 86400000 && r.t <= test[onset].t + 4 * 86400000);
+    const v = fa ? verdict('alarm', 'alert', `<b>PartnerQC alarm at ${fmtDate(fa.t)}</b>, ${fa.i - onset + 1} results and ${fmt((fa.t - test[onset].t) / 3600000, 1)} hours after the error began. ${esc(fa.advice)}`) : verdict('', 'info', 'PartnerQC did not alarm within the data. Errors this small are left to IQC.');
+    out.innerHTML = v + simTable(c.res, false) + `<div class="card" style="margin-top:18px"><div class="card-h"><div><h3>Moving average around the simulated error</h3><p class="sub">Fraction of the alarm limit. The dotted line marks where the error starts.</p></div></div><div class="chartbox"><canvas id="cSim" aria-label="Moving average around the simulated error"></canvas></div></div>` +
+      (type === 'glucose' ? '<p class="note">A glucose error moves the spread too. The alarm advice points to the glucose analyser because the glucose results shifted while HbA1c did not; HbA1c results themselves are not wrong here.</p>' : '');
+    drawMon('cSim', win.length > 10 ? win : c.mon, [{ label: 'Error starts', data: [{ x: test[onset].t, y: -2.5 }, { x: test[onset].t, y: 2.5 }], showLine: true, pointRadius: 0, borderColor: css('--ink'), borderDash: [2, 3], borderWidth: 1.5 }]);
+  } else {
+    out.innerHTML = empty('clock', 'Running 200 scenarios…', 'This takes a few seconds.');
+    setTimeout(() => {
+      const r = PQ.rng(17), lastT = test[test.length - 1].t - 2 * 86400000, maxI = Math.max(10, test.findIndex(x => x.t > lastT)); const acc = sch.map(s => ({ name: s.name, nuf: 0, hours: 0, undetected: 0 }));
+      for (let k = 0; k < 200; k++) { const onset = Math.floor(r() * maxI); const c = PQ.compare(S.cal, test, onset, { ...spec, sign: spec.type === 'imprecision' ? 1 : (r() < 0.5 ? -1 : 1) }, sch, { ...opts, seed: 100 + k }); c.res.forEach((x, i) => { acc[i].nuf += x.nuf / 200; acc[i].hours += x.hours / 200; acc[i].undetected += x.undetected / 200; }); }
+      out.innerHTML = verdict('', 'info', 'Average of 200 errors starting at random times in the monitored period.') + simTable(acc, true);
+    }, 30);
+  }
+}
+function simTable(res, avg){
+  const ref = res[1].nuf, mx = Math.max(...res.map(x => x.nuf), 1e-9);
+  return `<div class="card"><div class="card-h"><div><h3>Strategy comparison</h3><p class="sub">Unacceptable HbA1c results reported before the error is detected</p></div></div><div class="tbl fit strat wrapth"><table><thead><tr><th>Strategy</th><th class="num">Unacceptable HbA1c results reported${avg ? ' (mean)' : ' (expected)'}</th><th class="num">Relative to IQC 3×/day over the flow</th><th class="num">Hours to detection</th><th class="num">Not detected within 5 days</th></tr></thead><tbody>
+  ${res.map(x => `<tr class="${/PartnerQC/.test(x.name) ? 'hl' : ''}"><td>${esc(x.name)}</td><td class="num"><div class="cellbar"><span class="bar"><i style="width:${(100 * x.nuf / mx).toFixed(0)}%"></i></span>${fmt(x.nuf, 1)}</div></td><td class="num">${ref > 0.05 ? fmt(x.nuf / ref, 2) : '–'}</td><td class="num">${fmt(x.hours, 1)}</td><td class="num">${fmt(100 * x.undetected, 0)}%</td></tr>`).join('')}</tbody></table></div></div>`;
+}
+
+function vChk(){
+  if (needCal('chkBody')) return;
+  $('chkBody').innerHTML = `<div class="grid"><div class="panel"><h3 class="ph">${chipIc('shield')}One result</h3>
+      <label for="kId">Sample ID</label><input id="kId" placeholder="e.g. S104512">
+      <div class="row2"><div><label for="kA">HbA1c (%)</label><input id="kA" type="number" step="0.1" placeholder="7.2"></div>
+      <div><label for="kG">Glucose</label><input id="kG" type="number" step="0.1" placeholder="8.1"></div></div>
+      <label for="kGU">Glucose unit</label><select id="kGU"><option>mmol/L</option><option>mg/dL</option></select>
+      <div class="actions"><button class="primary" id="kGo">${ic('shield')}Check result</button></div>
+      <hr class="sep"><h3 class="ph">${chipIc('data')}Several results</h3>
+      <label for="kBatch">One line per sample: id, HbA1c, glucose</label><textarea id="kBatch" rows="5" placeholder="S1, 6.8, 7.4&#10;S2, 9.9, 5.1"></textarea>
+      <div class="actions"><button id="kBatchGo">Check all</button><button id="kReset">Reset the running average</button></div></div>
+      <div class="stack"><div id="kOut">${empty('shield', 'No result checked yet', 'Enter an HbA1c and the glucose from the same sample, then press Check result.')}</div>
+      <div class="card"><div class="card-h"><div><h3>Running average now</h3><p class="sub">Updates with every result you check here</p></div></div>
+        <div class="meter"><i id="kMeter"></i></div><div class="scale"><span style="left:8.33%">−1</span><span style="left:50%">0</span><span style="left:91.67%">+1</span></div><p class="note" id="kLevel"></p></div>
+      <div class="card"><h3>Connect your LIS</h3><p class="note" style="margin-top:2px">Run the open-source PartnerQC service next to the LIS or middleware with the parameters downloaded in Calibrate. Call it whenever an HbA1c result is ready:</p>
+<pre>partnerqc serve --params partnerqc_params.json --port 8765
+
+POST http://127.0.0.1:8765/check
+{"sample_id": "S104512", "hba1c": 7.2, "glucose": 8.1, "glucose_unit": "mmol/L"}
+
+→ {"status": "ok" | "watch" | "alarm" | "no_partner",
+   "message": "…", "sample_discordant": false}</pre>
+      <p class="note">Hold the HbA1c result for review when the status is "alarm" or when the single sample is discordant.</p></div></div></div>`;
+  const meter = () => { const lv = S.live / S.cal.h, w = Math.min(Math.abs(lv), 1.2) / 1.2 * 50; const m = $('kMeter'); m.style.width = w + '%'; m.style.left = lv >= 0 ? '50%' : (50 - w) + '%'; m.style.background = Math.abs(lv) > 1 ? css('--alarm') : Math.abs(lv) > 0.6 ? css('--watch') : css('--spread'); $('kLevel').textContent = `${fmt(lv, 2)} of the alarm limit (${lv >= 0 ? 'HbA1c above' : 'HbA1c below'} what glucose predicts).`; };
+  const one = (id, A, G) => { const r = PQ.monitor(S.cal, [{ id, t: Date.now(), A, G }], { e0: S.live }); S.live = r.e; const x = r.records[0]; store(); return x; };
+  const msg = x => x.status === 'no_partner' ? 'No glucose in this sample, so PartnerQC did not check it.' : x.status === 'alarm' ? x.advice : x.status === 'watch' ? `HbA1c is drifting ${x.level > 0 ? 'higher' : 'lower'} relative to glucose. Keep watching.` : 'Consistent with glucose.';
+  const label = { ok: 'Consistent', watch: 'Watch', alarm: 'Alarm', no_partner: 'Not checked' };
+  const vicon = { ok: 'ok', watch: 'info', alarm: 'alert', no_partner: 'info' };
+  const gmm = (v, u) => v > 0 ? (u === 'mg/dL' ? v / PQ.MGDL : v) : null;
+  $('kGo').onclick = () => { const A = +$('kA').value, G = gmm(+$('kG').value, $('kGU').value); if (!(A > 0)) { $('kOut').innerHTML = verdict('', 'info', 'Enter an HbA1c value.'); return; }
+    const x = one($('kId').value || 'sample', A, G);
+    $('kOut').innerHTML = verdict(x.status, vicon[x.status], `<div class="vt"><span class="pill ${x.status}">${label[x.status]}</span></div>${esc(msg(x))}${x.discordant ? '<br><b>This sample’s HbA1c is unusual for its glucose.</b> Consider sample identity, haemoglobin variants or interference, recent glycaemic change or a non-fasting glucose.' : ''}`); meter(); };
+  $('kBatchGo').onclick = () => { const lines = $('kBatch').value.split(/\n/).map(l => l.split(/[,;\t]/).map(s => s.trim())).filter(p => p.length >= 2 && +p[1] > 0);
+    const res = lines.map(p => ({ p, x: one(p[0], +p[1], gmm(+p[2], $('kGU').value)) }));
+    $('kOut').innerHTML = res.length ? `<div class="card"><div class="card-h"><div><h3>${res.length} results checked</h3></div></div><div class="tbl"><table><thead><tr><th>Sample</th><th>Status</th><th>Single sample</th></tr></thead><tbody>${res.map(({ p, x }) => `<tr><td>${esc(p[0])}</td><td><span class="pill ${x.status}">${label[x.status]}</span></td><td>${x.discordant ? 'Discordant with glucose' : ''}</td></tr>`).join('')}</tbody></table></div></div>` : verdict('', 'info', 'Add one line per sample: id, HbA1c, glucose.'); meter(); };
+  $('kReset').onclick = () => { S.live = 0; store(); meter(); };
+  meter();
+}
+
+function vPlan(){
+  const c = S.cal, n = S.rows ? Math.round(S.perWeekday) : 150, cov = S.rows ? S.coverage : 0.93;
+  $('planBody').innerHTML = `<div class="grid"><div class="panel"><h3 class="ph">${chipIc('calendar')}Your laboratory</h3>
+    <div class="row2"><div><label for="pCva">HbA1c CV (%)</label><input id="pCva" type="number" step="0.1" value="${S.assay.cva}"></div><div><label for="pTea">Allowable error (%)</label><input id="pTea" type="number" step="0.5" value="${S.assay.tea}"></div></div>
+    <div class="row2"><div><label for="pN">HbA1c results per day</label><input id="pN" type="number" value="${n}"></div><div><label for="pCov">Share with glucose</label><input id="pCov" type="number" step="0.01" value="${fmt(cov, 2)}"></div></div>
+    <div class="row2"><div><label for="pSdS">SD of the spread</label><input id="pSdS" type="number" step="0.005" value="${fmt(c ? c.sd : 0.15, 3)}"></div><div><label for="pSdA">SD of log HbA1c</label><input id="pSdA" type="number" step="0.005" value="${fmt(c ? c.alone.sd : 0.21, 3)}"></div></div>
+    <p class="note">Use the CV from your HbA1c IQC and your laboratory’s allowable total error. The two SDs come from Calibrate when it has been run.</p></div><div id="planOut"></div></div>`;
+  const go = () => { S.assay = { cva: +$('pCva').value, tea: +$('pTea').value }; store();
+    const p = PQ.plan({ cva: S.assay.cva, tea: S.assay.tea, n: +$('pN').value, coverage: +$('pCov').value, sdSpread: +$('pSdS').value, sdAlone: +$('pSdA').value });
+    $('planOut').innerHTML = `<div class="stack">${verdict('', 'calendar', `<b>${esc(p.rec)}</b>`)}<div class="facts">
+      ${kpi(fmt(p.sigma, 1), 'sigma (allowable error ÷ CV)', { icon: 'gauge' })}
+      ${kpi(`${fmt(p.dsec, 1)}%`, 'critical shift', { icon: 'alert', tone: 'watch' })}
+      ${kpi(`${fmt(p.dA, 2)} → ${fmt(p.dP, 2)}`, 'detectability δ, HbA1c alone → with glucose', { icon: 'law', tone: 'ok' })}
+      ${kpi(fmt(p.nEff, 0), 'results per day checked against glucose', { icon: 'drop', tone: 'glu' })}
+      ${kpi(`${fmt(p.beAlone, 0)} → ${fmt(p.be1, 0)}`, 'results per day needed for once-daily IQC + monitoring to beat IQC 3×/day, alone → with glucose', { icon: 'data' })}
+      ${kpi(`≈ ${fmt(p.be2, 0)}`, 'results per day for IQC 2×/day + PartnerQC', { icon: 'data', tone: 'hb' })}
+      ${kpi(`${fmt(p.runsMonth, 0)} vs 90`, 'IQC runs per month, this plan vs 3×/day', { icon: 'calendar', tone: 'ok' })}
+      ${kpi(`${fmt(p.frMonth, 2)} vs ${fmt(p.frIQC3, 2)}`, 'false rejections per month (1:3s/2:2s/R:4s)', { icon: 'shield' })}</div>
+      <p class="note" style="margin:0">Thresholds use the rule volume ≈ 59 × δ<sup>−1.71</sup>, compared with IQC three times daily spread evenly over the sample flow, for systematic errors. Imprecision still needs IQC runs. Treat the numbers as a starting point and confirm them with the simulator on your own data.</p></div>`; };
+  ['pCva', 'pTea', 'pN', 'pCov', 'pSdS', 'pSdA'].forEach(id => $(id).oninput = go); go();
+}
+
+/* ---------- charts ---------- */
+function baseOpts(ax, legend = true){
+  const grid = css('--line'), tick = css('--muted'), font = { family: getComputedStyle(document.body).fontFamily, size: 12, weight: '500' };
+  const mk = a => ({ type: a.type, min: a.min, max: a.max, border: { display: false, dash: [3, 4] }, grid: { color: c => (c.tick && c.tick.label === '') ? 'transparent' : grid, drawTicks: false }, ticks: { color: tick, font, padding: 8, maxTicksLimit: 8, callback: a.time ? (v => fmtDay(v)) : (a.type === 'logarithmic' ? (v => { const s = +v.toPrecision(2); return [3, 4, 5, 6, 7, 8, 10, 12, 15, 20, 25].includes(s) ? s : ''; }) : undefined) }, title: { display: !!a.title, text: a.title, color: tick, font: { ...font, weight: '600' } } });
+  return { responsive: true, maintainAspectRatio: false, animation: false, parsing: false, normalized: true,
+    plugins: { legend: { display: legend, position: 'bottom', labels: { color: tick, font: { ...font, weight: '600' }, filter: i => !!i.text, usePointStyle: true, boxWidth: 8, boxHeight: 8, padding: 18 } },
+      tooltip: { backgroundColor: '#0E1930', titleColor: '#FFFFFF', bodyColor: '#D6E2FF', padding: 10, cornerRadius: 10, boxPadding: 4, titleFont: { ...font, weight: '700' }, bodyFont: font, callbacks: { title: it => it.length && ax.x.time ? fmtDate(it[0].parsed.x) : '' } } },
+    scales: { x: mk(ax.x), y: mk(ax.y) } };
+}
+function drawChart(id, cfg){ if (S.charts[id]) S.charts[id].destroy(); const el = $(id); if (!el || typeof Chart === 'undefined') return; S.charts[id] = new Chart(el, cfg); }
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => route());
+
+/* ---------- start ---------- */
+function loadDemo(){ S.raw = null; S.units = { aIFCC: false, gMg: false }; S.law = null; setRows(PQ.makeDemo()); go('overview'); }
+$('btnDemo').onclick = loadDemo;
+$('btnOpen').onclick = () => $('file').click();
+$('file').onchange = e => { const f = e.target.files[0]; if (f) { S.law = null; readFile(f); } };
+$('btnTheme').onclick = () => { const t = isDark() ? 'light' : 'dark'; document.documentElement.dataset.theme = t; try { localStorage.setItem('partnerqc:theme', t); } catch (e) {} route(); };
+try { const t = localStorage.getItem('partnerqc:theme'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch (e) {}
+let dragDepth = 0;
+const hasFiles = e => e.dataTransfer && Array.from(e.dataTransfer.types || []).includes('Files');
+window.addEventListener('dragenter', e => { if (hasFiles(e)) { dragDepth++; document.body.classList.add('dragging'); } });
+window.addEventListener('dragleave', e => { if (hasFiles(e)) { dragDepth = Math.max(0, dragDepth - 1); if (!dragDepth) document.body.classList.remove('dragging'); } });
+window.addEventListener('dragover', e => { if (hasFiles(e)) e.preventDefault(); });
+window.addEventListener('drop', e => { if (!hasFiles(e)) return; e.preventDefault(); dragDepth = 0; document.body.classList.remove('dragging'); const f = e.dataTransfer.files[0]; if (f) { S.law = null; readFile(f); } });
+restore(); S.cal = null; route();
+
+
+/* ---------- IQC methods: Levey-Jennings + Westgard, EWMA, CUSUM ---------- */
+function zonePlugin(zones, id = 'zones'){
+  return { id, beforeDatasetsDraw(ch){ const a = ch.chartArea, y = ch.scales.y; if (!a || !y) return; const c = ch.ctx;
+    zones.forEach(z => { const top = y.getPixelForValue(Math.min(z.to, y.max)), bot = y.getPixelForValue(Math.max(z.from, y.min)); if (!(bot > top)) return;
+      c.save(); c.globalAlpha = z.a == null ? .12 : z.a; c.fillStyle = css(z.c); c.fillRect(a.left, top, a.right - a.left, bot - top); c.restore(); }); } };
+}
+const LJ_ZONES = [{ from: -2, to: 2, c: '--ok', a: .11 }, { from: 2, to: 3, c: '--watch', a: .2 }, { from: -3, to: -2, c: '--watch', a: .2 }, { from: 3, to: 9, c: '--alarm', a: .13 }, { from: -9, to: -3, c: '--alarm', a: .13 }];
+const MON_ZONES = [{ from: -.6, to: .6, c: '--ok', a: .11 }, { from: .6, to: 1, c: '--watch', a: .2 }, { from: -1, to: -.6, c: '--watch', a: .2 }, { from: 1, to: 9, c: '--alarm', a: .13 }, { from: -9, to: -1, c: '--alarm', a: .13 }];
+const ERR_NAME = { shift: 'A sudden shift', drift: 'A drift', imprecision: 'A loss of precision' };
+
+function iqcSetup(){
+  if (!S.iqcCfg) { const cv = S.assay.cva / 100; S.iqcCfg = { levels: [{ mean: 5.4, sd: +(5.4 * cv).toFixed(3) }, { mean: 9.8, sd: +(9.8 * cv).toFixed(3) }], error: { type: 'shift', size: 1.5, start: 44 }, runs: 90, seed: 3 }; }
+  if (!S.iqcRuns) S.iqcRuns = PQ.makeIQC({ runs: S.iqcCfg.runs, levels: S.iqcCfg.levels, error: S.iqcCfg.error, seed: S.iqcCfg.seed });
+}
+function parseIQC(text, levels){
+  const runs = [];
+  text.split(/\n/).forEach(line => { const p = line.split(/[,;\t]/).map(s => s.trim()).filter(s => s !== ''); if (!p.length) return;
+    let t = null, nums = p; if (isNaN(+p[0]) && p.length >= 2) { t = parseTimeCell(p[0], true, false); nums = p.slice(1); }
+    const v = nums.slice(0, 2).map(x => parseFloat(x)).filter(x => isFinite(x)); if (!v.length) return;
+    runs.push({ t, v, z: v.map((x, l) => (x - levels[l].mean) / levels[l].sd) }); });
+  return runs;
+}
+function iqcAnalyse(runs, err){
+  const wg = PQ.westgard(runs, PQ.WG_ALL), ew = PQ.ewmaChart(runs), cu = PQ.cusumChart(runs);
+  const rows = PQ.IQC_METHODS.map(m => { const f = m.fn(runs), n = f.filter(Boolean).length, first = f.findIndex(Boolean); let after = null, falseN = 0;
+    if (err) { const k = f.findIndex((v, i) => v && i >= err.start); after = k < 0 ? null : k - err.start + 1; falseN = f.slice(0, err.start).filter(Boolean).length; }
+    return { m, n, first, after, falseN }; });
+  return { wg, ew, cu, rows };
+}
+const heat = d => d <= 3 ? 'g' : d <= 10 ? 'y' : 'r';
+
+function vIQC(){
+  iqcSetup(); const cfg = S.iqcCfg, runs = S.iqcRuns, err = cfg.error, an = iqcAnalyse(runs, err), L = cfg.levels;
+  const rejN = an.wg.filter(x => x.reject).length, warnN = an.wg.filter(x => x.warn && !x.reject).length;
+  const when = r => r.t ? ` <small style="display:inline;color:var(--muted)">${fmtDate(r.t)}</small>` : '';
+  $('iqcBody').innerHTML = `<div class="facts">
+      ${kpi(runs.length, 'control runs analysed', { icon: 'data' })}
+      ${kpi(rejN, 'runs rejected by the Westgard multirule', { icon: 'alert', tone: rejN ? 'alarm' : 'ok' })}
+      ${kpi(warnN, 'runs with a 1:2s warning only', { icon: 'info', tone: 'watch' })}
+      ${kpi(err ? `Run ${err.start + 1}` : '–', err ? `${ERR_NAME[err.type].toLowerCase()} of ${fmt(err.size, 1)} ${err.type === 'imprecision' ? '× SD' : 'SD'} begins` : 'no error added to this series', { icon: 'flask' })}</div>
+    <div class="grid"><div class="stack"><div class="panel"><h3 class="ph">${chipIc('flask')}Control material</h3>
+        <div class="lvl"><div><label for="qM1">Level 1 target (%)</label><input id="qM1" type="number" step="0.1" value="${L[0].mean}"></div><div><label for="qS1">Level 1 SD</label><input id="qS1" type="number" step="0.01" min="0.001" value="${L[0].sd}"></div></div>
+        <div class="lvl"><div><label for="qM2">Level 2 target (%)</label><input id="qM2" type="number" step="0.1" value="${L[1].mean}"></div><div><label for="qS2">Level 2 SD</label><input id="qS2" type="number" step="0.01" min="0.001" value="${L[1].sd}"></div></div>
+        <p class="note">Defaults use your HbA1c CV of ${S.assay.cva}%. Replace them with the values from your control insert or your own mean and SD.</p>
+        <hr class="sep"><h3 class="ph">${chipIc('bolt')}Add an error to a demo series</h3>
+        <label for="qEt">Error</label><select id="qEt"><option value="none">None (in control)</option><option value="shift">Sudden shift</option><option value="drift">Drift over one day</option><option value="imprecision">Loss of precision</option></select>
+        <div class="row2"><div><label for="qEs" id="qEsL">Size (SD)</label><input id="qEs" type="number" step="0.1" min="0.1" value="${err ? err.size : 1.5}"></div><div><label for="qEr">Starts at run</label><input id="qEr" type="number" min="5" max="85" value="${err ? err.start + 1 : 45}"></div></div>
+        <div class="actions"><button class="primary" id="qGen">${ic('play')}Generate demo series</button></div>
+        <hr class="sep"><h3 class="ph">${chipIc('data')}Or paste your control results</h3>
+        <label for="qPaste">One run per line: [date time,] level 1, level 2</label><textarea id="qPaste" rows="5" placeholder="2026-09-01 05:00, 5.41, 9.77&#10;2026-09-01 13:00, 5.38, 9.86"></textarea>
+        <div id="qMsg"></div><div class="actions"><button id="qParse">Analyse pasted results</button></div></div></div>
+      <div class="stack">
+        <div class="card"><div class="card-h"><div><h3>Levey-Jennings chart</h3><p class="sub">Control results in SD units from the target. Rejected runs are marked red.</p></div>
+          <div class="legend"><span class="lg" style="--c:var(--spread)"><i></i>Level 1</span><span class="lg" style="--c:var(--glucose)"><i></i>Level 2</span></div></div>
+          <div class="chartbox tall"><canvas id="cLJ" aria-label="Levey-Jennings chart of the two control levels"></canvas></div>
+          <div class="key"><span><i style="background:var(--ok)"></i>within ±2 SD</span><span><i style="background:var(--watch)"></i>2 to 3 SD (warning)</span><span><i style="background:var(--alarm)"></i>beyond ±3 SD</span><span><i style="background:var(--alarm);border-radius:50%"></i>run rejected by the multirule</span></div></div>
+        <div class="card"><div class="card-h"><div><h3>What each technique says about this series</h3><p class="sub">${err ? 'Runs after the error began, counted from its first run.' : 'No error was added, so any signal is a false alarm.'}</p></div></div>
+          <div class="tbl fit wrapth"><table class="hm"><thead><tr><th>Technique</th><th class="num">Signals</th><th>First signal</th><th class="num">${err ? 'Detected after' : 'Status'}</th></tr></thead><tbody>
+          ${an.rows.map(x => `<tr><td><b>${esc(x.m.name)}</b><small>${esc(x.m.note)}</small></td><td class="num">${x.n}</td><td class="nw">${x.first >= 0 ? `Run ${x.first + 1}${when(runs[x.first])}` : '–'}</td>${err ? `<td class="c ${x.after == null ? 'r' : heat(x.after)}">${x.after == null ? 'Not detected' : `${x.after} ${x.after === 1 ? 'run' : 'runs'}`}${x.falseN ? `<small>${x.falseN} false ${x.falseN === 1 ? 'alarm' : 'alarms'} before</small>` : ''}</td>` : `<td class="c ${x.n ? 'r' : 'g'}">${x.n ? 'Signalled' : 'In control'}</td>`}</tr>`).join('')}</tbody></table></div></div>
+        <div class="dash" style="gap:18px">
+          <div class="card c6"><div class="card-h"><div><h3>EWMA</h3><p class="sub">Weighted average of the two levels, λ = 0.2</p></div></div><div class="chartbox" style="height:260px"><canvas id="cEW" aria-label="EWMA chart of the control results"></canvas></div></div>
+          <div class="card c6"><div class="card-h"><div><h3>CUSUM</h3><p class="sub">Upper and lower sums, k = 0.5, limit ±4</p></div></div><div class="chartbox" style="height:260px"><canvas id="cCU" aria-label="CUSUM chart of the control results"></canvas></div></div></div>
+        <div class="card"><div class="card-h"><div><h3>How fast does each technique detect an error?</h3><p class="sub">Average number of control runs until the first signal after a systematic shift of both levels.</p></div><button id="qRerun">${ic('play')}Run again</button></div>
+          <div id="iqcCmp">${empty('clock', 'Running 300 simulations per cell…', 'This takes about a second.')}</div></div>
+        <div class="card compare-callout"><div><h3>Between control runs, patient results keep coming</h3><p>IQC only sees the control material a few times a day. PartnerQC checks every HbA1c against its glucose in between. Simulate an error to compare IQC schedules with and without it.</p></div><div class="actions" style="margin:0"><a class="btn" href="#monitor">${ic('monitor')}Open monitor</a><a class="btn primary" href="#simulate">${ic('flask')}Simulate an error</a></div></div></div></div>`;
+  $('qEt').value = err ? err.type : 'none';
+  const setSizeLabel = () => { const t = $('qEt').value; $('qEsL').textContent = t === 'imprecision' ? 'SD multiplier' : 'Size (SD)'; };
+  setSizeLabel();
+  $('qEt').onchange = () => { const t = $('qEt').value; setSizeLabel(); $('qEs').value = t === 'imprecision' ? 2 : t === 'drift' ? 2 : 1.5; };
+  const levels = () => [{ mean: +$('qM1').value, sd: +$('qS1').value }, { mean: +$('qM2').value, sd: +$('qS2').value }];
+  const okLevels = lv => lv.every(x => x.mean > 0 && x.sd > 0);
+  $('qGen').onclick = () => { const lv = levels(); if (!okLevels(lv)) { $('qMsg').innerHTML = verdict('alarm', 'alert', 'Enter a target and an SD above zero for both levels.'); return; }
+    const t = $('qEt').value; S.iqcCfg = { levels: lv, runs: 90, seed: (S.iqcCfg.seed || 3) + 1, error: t === 'none' ? null : { type: t, size: Math.max(0.1, +$('qEs').value || 1.5), start: Math.min(85, Math.max(5, Math.round(+$('qEr').value || 45))) - 1 } };
+    S.iqcRuns = PQ.makeIQC({ runs: 90, levels: lv, error: S.iqcCfg.error, seed: S.iqcCfg.seed }); vIQC(); };
+  $('qParse').onclick = () => { const lv = levels(); if (!okLevels(lv)) { $('qMsg').innerHTML = verdict('alarm', 'alert', 'Enter a target and an SD above zero for both levels.'); return; }
+    const pr = parseIQC($('qPaste').value, lv); if (pr.length < 5) { $('qMsg').innerHTML = verdict('alarm', 'alert', 'Paste at least 5 runs, one per line: date time (optional), level 1, level 2.'); return; }
+    S.iqcCfg = { levels: lv, runs: pr.length, seed: S.iqcCfg.seed, error: null }; S.iqcRuns = pr; vIQC(); };
+  $('qRerun').onclick = () => { S.iqcCmp = null; vIQC(); };
+  drawIQC(runs, an, err);
+  const go = () => { if (!$('iqcCmp')) return; showIqcCmp(); };
+  if (S.iqcCmp) go(); else setTimeout(() => { S.iqcCmp = PQ.iqcCompare({ reps: 300, seed: 11 + (S.iqcSeed = (S.iqcSeed || 0) + 1) }); go(); }, 40);
+}
+function drawIQC(runs, an, err){
+  const clip = v => Math.max(-4, Math.min(4, v)), x = i => i + 1, cols = ['--spread', '--glucose'];
+  const rej = an.wg.map(w => w.reject), warn = an.wg.map(w => w.warn);
+  const lvl = l => ({ label: `Level ${l + 1}`, data: runs.map((r, i) => r.z[l] == null ? null : { x: x(i), y: clip(r.z[l]) }).filter(Boolean), showLine: true, borderColor: css(cols[l]), borderWidth: 1.6,
+    pointRadius: runs.map((r, i) => rej[i] ? 5.5 : warn[i] ? 4 : 2.6), pointBackgroundColor: runs.map((r, i) => rej[i] ? css('--alarm') : warn[i] ? css('--watch') : css(cols[l])), pointBorderColor: css('--solid'), pointBorderWidth: 1 });
+  const mark = err ? [{ label: 'Error starts', data: [{ x: err.start + 1, y: -4 }, { x: err.start + 1, y: 4 }], showLine: true, pointRadius: 0, borderColor: css('--ink'), borderDash: [3, 4], borderWidth: 1.5 }] : [];
+  const lines = [0, 1, -1, 2, -2, 3, -3].map(y => ({ data: [{ x: 1, y }, { x: runs.length, y }], showLine: true, pointRadius: 0, borderColor: y === 0 ? css('--muted') : css('--line'), borderWidth: y === 0 ? 1.2 : 1, borderDash: y === 0 ? [] : [3, 4], label: '' }));
+  const o = baseOpts({ x: { type: 'linear', title: 'Control run' }, y: { min: -4, max: 4, title: 'Result in SD from target' } }, false);
+  o.scales.y.ticks.stepSize = 1; o.scales.y.ticks.callback = v => (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v) + (v ? ' SD' : '');
+  o.plugins.tooltip.callbacks = { title: it => it.length ? `Run ${it[0].parsed.x}${runs[it[0].parsed.x - 1] && runs[it[0].parsed.x - 1].t ? ' · ' + fmtDate(runs[it[0].parsed.x - 1].t) : ''}` : '', label: c => c.dataset.label ? `${c.dataset.label}: ${fmt(c.parsed.y, 2)} SD` : '' };
+  drawChart('cLJ', { type: 'scatter', data: { datasets: [...lines, lvl(0), ...(runs.some(r => r.z[1] != null) ? [lvl(1)] : []), ...mark] }, plugins: [zonePlugin(LJ_ZONES)], options: o });
+  const steady = 2.9 * Math.sqrt(0.2 / 1.8), fromErr = p => !err || p.i >= err.start, fEw = an.ew.findIndex(p => p.signal && fromErr(p)), fHi = an.cu.findIndex(p => p.signal && p.hi > p.h && fromErr(p)), fLo = an.cu.findIndex(p => p.signal && p.lo > p.h && fromErr(p));
+  const oe = baseOpts({ x: { type: 'linear', title: 'Control run' }, y: { min: -3, max: 3, title: 'EWMA (SD units)' } }, false);
+  drawChart('cEW', { type: 'scatter', data: { datasets: [
+    { data: an.ew.map(p => ({ x: x(p.i), y: p.lim })), showLine: true, pointRadius: 0, borderColor: css('--alarm'), borderWidth: 1.2, borderDash: [4, 4], label: '' },
+    { data: an.ew.map(p => ({ x: x(p.i), y: -p.lim })), showLine: true, pointRadius: 0, borderColor: css('--alarm'), borderWidth: 1.2, borderDash: [4, 4], label: '' },
+    { label: 'EWMA', data: an.ew.map(p => ({ x: x(p.i), y: Math.max(-3, Math.min(3, p.e)) })), showLine: true, borderColor: css('--acc'), borderWidth: 2, pointRadius: an.ew.map((p, i) => i === fEw ? 6.5 : 0), pointBackgroundColor: css('--alarm'), pointBorderColor: css('--solid'), pointBorderWidth: 1.5 }, ...mark.map(m => ({ ...m, data: [{ x: m.data[0].x, y: -3 }, { x: m.data[1].x, y: 3 }] }))] },
+    plugins: [zonePlugin([{ from: -steady, to: steady, c: '--ok', a: .11 }, { from: steady, to: 9, c: '--alarm', a: .13 }, { from: -9, to: -steady, c: '--alarm', a: .13 }])], options: oe });
+  const oc = baseOpts({ x: { type: 'linear', title: 'Control run' }, y: { min: -8, max: 8, title: 'CUSUM (SD units)' } }, false);
+  drawChart('cCU', { type: 'scatter', data: { datasets: [
+    { label: 'Upper sum', data: an.cu.map(p => ({ x: x(p.i), y: Math.min(8, p.hi) })), showLine: true, borderColor: css('--hba1c'), borderWidth: 1.8, pointRadius: an.cu.map((p, i) => i === fHi ? 6.5 : 0), pointBackgroundColor: css('--alarm'), pointBorderColor: css('--solid'), pointBorderWidth: 1.5 },
+    { label: 'Lower sum', data: an.cu.map(p => ({ x: x(p.i), y: -Math.min(8, p.lo) })), showLine: true, borderColor: css('--glucose'), borderWidth: 1.8, pointRadius: an.cu.map((p, i) => i === fLo ? 6.5 : 0), pointBackgroundColor: css('--alarm'), pointBorderColor: css('--solid'), pointBorderWidth: 1.5 },
+    ...mark.map(m => ({ ...m, data: [{ x: m.data[0].x, y: -8 }, { x: m.data[1].x, y: 8 }] }))] },
+    plugins: [zonePlugin([{ from: -4, to: 4, c: '--ok', a: .11 }, { from: 4, to: 99, c: '--alarm', a: .13 }, { from: -99, to: -4, c: '--alarm', a: .13 }])], options: oc });
+}
+function showIqcCmp(){
+  const c = S.iqcCmp, el = $('iqcCmp'); if (!c || !el) return;
+  const best = c.shifts.map((_, j) => Math.min(...c.rows.map(r => r.delay[j])));
+  const fcls = f => f <= 0.012 ? 'g' : f <= 0.04 ? 'y' : 'r';
+  el.innerHTML = `<div class="tbl fit wrapth"><table class="hm"><thead><tr><th>Technique</th><th class="num">False alarms<br>in control</th>${c.shifts.map(s => `<th class="num">${s} SD<br>shift</th>`).join('')}</tr></thead><tbody>
+    ${c.rows.map(r => `<tr><td><b>${esc(r.name)}</b></td><td class="c ${fcls(r.falseRate)}">${fmt(100 * r.falseRate, 1)}%<small>1 run in ${isFinite(r.arl0) ? Math.round(r.arl0) : '∞'}</small></td>${r.delay.map((d, j) => `<td class="c ${heat(d)}${Math.abs(d - best[j]) < 0.05 ? ' best' : ''}">${fmt(d, 1)}${r.missed[j] > 0.05 ? '*' : ''}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
+    <div class="key"><span><i style="background:var(--ok)"></i>3 runs or fewer</span><span><i style="background:var(--watch)"></i>4 to 10 runs</span><span><i style="background:var(--alarm)"></i>more than 10 runs</span><span>Outlined: fastest for that shift</span></div>
+    <p class="note">Two control levels per run, both shifted by the same amount after 20 in-control runs. ${c.reps} simulations per cell, capped at ${c.maxRuns} runs. * More than 5% of simulations did not signal within ${c.maxRuns} runs. Small shifts favour EWMA and CUSUM; large ones are caught by any rule, and 1:3s does it with the fewest false alarms.</p>`;
+}
+
+/* ---------- visible error report ---------- */
+function showErr(msg){ let b = document.getElementById('errbar');
+  if (!b) { b = document.createElement('div'); b.id = 'errbar'; b.className = 'errbar'; b.setAttribute('role', 'alert'); document.body.prepend(b); }
+  b.innerHTML = `${ic('alert')}<div><b>Something went wrong.</b> <code>${esc(msg)}</code><br><span class="note" style="margin:0">Copy this message when you report the problem. Reload the page to start again.</span></div><button type="button" data-act="close">Close</button>`; }
+window.addEventListener('error', e => showErr(e.message || 'Script error'));
+window.addEventListener('unhandledrejection', e => showErr(String(e.reason && e.reason.message || e.reason)));
+</script>
+</body>
+</html>

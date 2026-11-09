@@ -1,0 +1,39 @@
+cff-version: 1.2.0
+message: "If you use PartnerQC, please cite it as below."
+type: software
+title: "PartnerQC: glucose as a built-in partner for patient-based quality control of HbA1c"
+abstract: >-
+  PartnerQC checks every glycated haemoglobin (HbA1c) result against the glucose
+  measured in the same sample. HbA1c and glucose quantiles follow a power law with a
+  stable exponent across populations, so the partner spread
+  ln(HbA1c) - beta * ln(glucose) removes much of the between-patient variation and an
+  exponentially weighted moving average of it detects HbA1c analyser bias between
+  internal quality control runs. The software provides an offline web app, a Python
+  package and command-line tool, and an HTTP service for laboratory information
+  system integration.
+version: 0.1.0
+date-released: 2026-11-09
+license: MIT
+keywords:
+  - glycated haemoglobin
+  - HbA1c
+  - glucose
+  - patient-based real-time quality control
+  - PBRTQC
+  - internal quality control
+  - laboratory quality management
+authors:
+  - family-names: Nguyễn
+    given-names: Thị Ngọc Mỹ
+    affiliation: Faculty of Medical Technology, University of Medicine and Pharmacy at Ho Chi Minh City, Viet Nam
+  - family-names: Nguyễn
+    given-names: Minh Sơn
+    affiliation: Faculty of Medical Technology, Van Lang University, Ho Chi Minh City, Viet Nam
+  - family-names: Phùng
+    given-names: Hạnh Thảo
+    affiliation: Faculty of Medicine, Pham Ngoc Thach University, Ho Chi Minh City, Viet Nam
+  - family-names: Lâm
+    given-names: Kiến Thành
+    affiliation: Faculty of Medical Technology, Van Lang University, Ho Chi Minh City, Viet Nam
+    email: thanh.lk@vlu.edu.vn
+    orcid: "https://orcid.org/0009-0003-5878-9278"

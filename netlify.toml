@@ -1,0 +1,19 @@
+# Netlify serves the prebuilt single-file web app in docs/.
+# No build step is needed: docs/index.html is rebuilt with `python web/build.py`
+# and the GitHub test workflow checks that it is up to date.
+[build]
+  publish = "docs"
+  command = ""
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "SAMEORIGIN"
+    Referrer-Policy = "no-referrer"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+[[headers]]
+  for = "/*.md"
+  [headers.values]
+    Content-Type = "text/plain; charset=utf-8"

@@ -16,3 +16,8 @@ partnerqc = "partnerqc.cli:main"
 
 [tool.setuptools]
 packages = ["partnerqc"]
+
+[project.urls]
+Homepage = "https://pbrtqcpartner.netlify.app"
+Source = "https://github.com/lamkienthanh92/PBRTQCpartner"
+Archive = "https://doi.org/10.5281/zenodo.24076346"

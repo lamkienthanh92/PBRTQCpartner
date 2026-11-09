@@ -1,10 +1,14 @@
 # PartnerQC
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24076346.svg)](https://doi.org/10.5281/zenodo.24076346)
+
+**Live app:** https://pbrtqcpartner.netlify.app · **Source:** https://github.com/lamkienthanh92/PBRTQCpartner · **Archive:** https://doi.org/10.5281/zenodo.24076346
+
 **Check every HbA1c result against the glucose measured in the same sample.**
 
 Internal quality control (IQC) for HbA1c runs only a few times a day, and an analyser error that starts between runs reaches patients. PartnerQC uses glucose, which is already measured in about 92–96% of HbA1c samples, as a built-in partner: when HbA1c drifts away from what glucose predicts, it raises an alarm long before the next control run.
 
-- **Web app**: open `docs/index.html`, or the GitHub Pages site of this repository. Load an LIS export or the demo data; nothing leaves your browser.
+- **Web app**: https://pbrtqcpartner.netlify.app, or open `docs/index.html` locally. Load an LIS export or the demo data; nothing leaves your browser.
 - **Python package and service**: calibrate on your own data and connect the LIS through a small HTTP endpoint.
 
 > Research software for laboratory quality management. It supports, and does not replace, IQC, external quality assessment and professional judgement. It is not a medical device.
@@ -21,7 +25,7 @@ Internal quality control (IQC) for HbA1c runs only a few times a day, and an ana
 ## Quick start
 
 ### Web app
-Open `docs/index.html` in a browser, or use the hosted copy on Netlify or GitHub Pages (served from the `docs/` folder). It is one self-contained file and works offline. After editing `web/template.html`, run `python web/build.py` to rebuild it. Steps: Overview → Data → Distribution law → Calibrate → Monitor → IQC methods → Simulate an error → Check a result → QC plan.
+Open `docs/index.html` in a browser, or use the hosted copy at https://pbrtqcpartner.netlify.app. It is one self-contained file and works offline. After editing `web/template.html`, run `python web/build.py` to rebuild it. Steps: Overview → Data → Distribution law → Calibrate → Monitor → IQC methods → Simulate an error → Check a result → QC plan.
 
 The **IQC methods** tab needs no patient data. It puts the classic control-material techniques side by side on the same two-level IQC series (a generated demo series with an optional shift, drift or loss of precision, or your own pasted results): Levey-Jennings chart with Westgard rules (1:2s, 1:3s, 2:2s, R:4s, 4:1s, 10x), EWMA and CUSUM. A Monte Carlo table shows how many control runs each technique needs to detect shifts of 0.5 to 3 SD, and how often it raises a false alarm.
 
@@ -56,7 +60,7 @@ Retrospective data from 1,539 outpatients with type 2 diabetes (three Vietnamese
 ## Deployment
 
 - **Web app**: `docs/` is a static site. `netlify.toml` publishes it on Netlify with no build step; GitHub Pages can serve the same folder.
-- **Archiving**: `.zenodo.json` and `CITATION.cff` hold the metadata Zenodo uses to mint a DOI for each GitHub release.
+- **Archiving**: Zenodo, DOI [10.5281/zenodo.24076346](https://doi.org/10.5281/zenodo.24076346) (all versions; version 1: [10.5281/zenodo.24076347](https://doi.org/10.5281/zenodo.24076347)).
 
 ## Repository layout
 
@@ -83,7 +87,13 @@ Ho Chi Minh City, Viet Nam.
 
 ## Licence
 
-MIT. See [LICENSE](LICENSE) and [CITATION.cff](CITATION.cff).
+MIT. See [LICENSE](LICENSE).
+
+## How to cite
+
+Nguyễn TNM, Nguyễn MS, Phùng HT, Lâm KT. PartnerQC: glucose as a built-in partner for patient-based quality control of HbA1c [software]. Zenodo; 2026. https://doi.org/10.5281/zenodo.24076346
+
+See also [CITATION.cff](CITATION.cff).
 
 ---
 

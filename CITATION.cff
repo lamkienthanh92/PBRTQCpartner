@@ -12,6 +12,9 @@ abstract: >-
   package and command-line tool, and an HTTP service for laboratory information
   system integration.
 version: 0.1.0
+doi: 10.5281/zenodo.24076346
+repository-code: "https://github.com/lamkienthanh92/PBRTQCpartner"
+url: "https://pbrtqcpartner.netlify.app"
 date-released: 2026-11-09
 license: MIT
 keywords:
